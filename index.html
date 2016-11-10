@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Hello World!</title>
+		<link href="http://netdna.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
+
+		<link href="./css/axis/AXJ.css" rel="stylesheet" />
+		<link href="./css/axis/AXInput.css" rel="stylesheet" />
+		<link href="./css/axis/AXGrid.css" rel="stylesheet" />
+		<link href="./css/axis/AXButton.css" rel="stylesheet" />
+		<link href="./css/axis/AXProgress.css" rel="stylesheet" />
+    	<link href="./css/bootstrap.min.css" rel="stylesheet">
+    	<link href="./css/style.css" rel="stylesheet">
+
+
+		<script>window.$ = window.jQuery = require('./js/jquery-3.1.0.js');</script>
+		<script src="./js/bootstrap.min.js"></script>
+		<script src="./js/hmac-sha256.js"></script>
+		<script src="./js/enc-base64-min.js"></script>
+  </head>
+  <style type="css/text">
+
+  </style>
+  <body>
+			<input type="button" id="btnTestAjax" value="sha256 테스트" class="AXButton Blue">
+      <input type="button" id="btnTestAjax2" value="sha256+base64 테스트" class="AXButton Blue">
+      <input type="button" id="btnTestAjax3" value="sha256 테스트(jsonp)" class="AXButton Blue">
+      <input type="button" id="btnTestAjax4" value="sha256+base64 테스트(jsonp)" class="AXButton Blue">
+      <input type="button" id="btnTestAjax5" value="노 권장" class="AXButton Blue">
+  </body>
+
+<script>
+
+	$("#btnTestAjax").click(function(){
+		var timeStamp = new Date().getTime();//타임 스탬프 
+		var strSign = timeStamp+".GET./ncc/campaigns";//암호화 스트링
+
+		var hash = CryptoJS.HmacSHA256(strSign, "AQAAAACa3yfsJbIscWvvuQFEcWcWCbxQTtTzf/r0XoAGUJGlYg==");
+		var hashInBase64 = CryptoJS.enc.Base64.stringify(hash);
+
+		$.ajax({
+			type: "GET",
+			dataType: 'json',
+			//contentType: 'application/json', 
+			url : "https://api.naver.com/ncc/campaigns",
+			beforeSend: function(xhr, settings){
+				xhr.setRequestHeader("X-Timestamp", timeStamp);//타임스탬프
+				xhr.setRequestHeader("X-API-KEY", "01000000009adf27ec25b22c716befb9014471671645291126c56bf900f80bb2473388b633");//라이선스키
+				xhr.setRequestHeader("X-Customer", "948185");//내 아이디
+				xhr.setRequestHeader("X-Signature", hashInBase64);//sha256
+			},
+			success: function(data,test,ttest){
+				console.log(data);
+			},error:function(XMLHttpRequest, textStatus, errorThrows){ // erreur durant la requete
+        console.log(XMLHttpRequest);
+      }
+		});
+	});
+</script>
+
+<script>
+	require('./renderer.js')
+</script>
+
+
+</html>
