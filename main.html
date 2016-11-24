@@ -9,43 +9,38 @@
 		<link href="./css/axis/AXInput.css" rel="stylesheet" />
 		<link href="./css/axis/AXGrid.css" rel="stylesheet" />
 		<link href="./css/axis/AXButton.css" rel="stylesheet" />
-		<link href="./css/axis/AXProgress.css" rel="stylesheet" />
     	<link href="./css/bootstrap.min.css" rel="stylesheet">
     	<link href="./css/style.css" rel="stylesheet">
 
 
 		<script>window.$ = window.jQuery = require('./js/jquery-3.1.0.js');</script>
 		<script src="./js/axis/AXJ.js"></script>
-		<script src="./js/axis/AXProgress.js"></script>
 		<script src="./js/axis/AXGrid.js"></script>
 		<script src="./js/bootstrap.min.js"></script>
-		<script src="./js/crypto-lite-min.js"></script>
-		<script src="./js/base64.js"></script>
+		<script src="./js/hmac-sha256.js"></script>
+		<script src="./js/enc-base64-min.js"></script>
   </head>
   <style type="css/text">
-
   </style>
   <body>
 		<div class="container-fluid">
 			<div class="row">
 				<div class="col-md-12">
-					<input type="button" id="btnTestAjax" value="테스트AJAX" class="AXButton Blue">
-					<iframe id="ifrView" src="http://searchad.naver.com/Login" frameborder="0" width="1000" height="1000" onload="urlMoveEvent(this.contentWindow.location.href);"></iframe>		
 				</div>
 			</div>
 			<div class="row">
 				<div class="col-md-12">
 					<div class="row">
 						<div class="col-md-6">
+							<input type="button" id="btnTestAjax" value="ajaxTest" class="AXButton Blue">
+							<input type="button" id="btnTestAjax2" value="ajaxTest2" class="AXButton Blue">
+							<input type="button" id="btnTestAjax3" value="ajaxTest3" class="AXButton Blue">
 							<input type="button" id="btnUser" value="계정 동기화" class="AXButton Blue">
 						</div>
 						<div class="col-md-6 text-right">
 							<input type="button" id="btnGroup" value="그룹 동기화" class="AXButton Blue">
-							
 							<input type="button" id="btnBiddingStart" value="입찰 시작" class="AXButton Blue">
 							<input type="button" id="btnBiddingStop" value="입찰 중지" class="AXButton Blue">
-							<input type="button" id="testBtn" value="테스트" class="AXButton Blue">
-							<input type="button" id="testBtnUrl" value="테스트이동" class="AXButton Blue">
 						</div>
 					</div>
 					<ul class="nav nav-tabs">
@@ -58,89 +53,53 @@
 					</ul>
 					<div class="row">
 						<div class="col-md-12">
-							<webview  id="foo" style="width:1000px; height:1000px" disablewebsecurity='on'></webview>
 							<div id="userDataDiv"> 
 								<h4>[그룹 리스트]</h4>
 								<div id="userDataGrid"></div>
 							</div>
 							
 							<div id="groupDataDiv">
-								<h5>비즈니스머니 잔액 : </h5><p id="myMoney"></p>
+								<div class="col-md-12" align="right"> <font size="3em" color="#6799FF" id="myMoney"></font> </div>
 								<div id="groupDataGrid" style="height:150px;"></div>
 								<h4>[키워드 리스트]</h4>
 								<div id="keywordGrid" style="height:550px;"></div>
 							</div>
 						</div>
 					</div>
+					<div class="row">
+						<div class="col-md-8">
+							<div class="progress">
+								<div class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width:0%">
+									<span class="sr-only"></span>
+								</div>
+							</div>
+						</div>
+						<div class="col-md-4">
+							<label>라벨 라벨</label>
+						</div>
+					</div>
 				</div>
 			</div>
-			<!-- <iframe id="ifrView" src="http://searchad.naver.com" frameborder="0" width="1000" height="1000" onload="urlMoveEvent(this.contentWindow.location.href);"></iframe> -->
 	</div>
   </body>
 
 <script>
-	webview = document.getElementById('foo');
-	webview.src = "http://searchad.naver.com/";
-	
 	//화면 구성
-	$("#ifrView").show();
-	$("#userDataDiv").hide();
 	$("#groupDataDiv").hide();
 	$("#btnBiddingStart").hide();
 	$("#btnBiddingStop").hide();
-
-	require('./js/dataPick.js');
+	
 	require('./js/gridMake.js');
+	require('./js/dataPick.js');
 	require('./js/fileControll.js');
 	require('./js/bidding.js');
 
-	webContents = require('electron');
-	
-	onload = () => {
-		webview.addEventListener('dom-ready', (e) => {
-		  webview.executeJavaScript('console.log(ENV.customerId)');
-		});
-
-		webview.addEventListener('console-message', (e) => {
-		  if(e.message >0 ){//id값 가져오고 나서
-				$("#foo").hide();
-				
-				customerId = e.message;
-				webview.loadURL("https://manage.searchad.naver.com/customers/"+customerId+"/campaigns");
-				$("#userDataMenu").click();
-		  }
-		});
-  	}//onload Event
-
-	function urlMoveEvent(url){//iframe onload
-		$.ajax( { url: $("#ifrView").attr('src'), success: function(r,x,d){
-    		console.log( d.getAllResponseHeaders() );
-		} } );
-
-		if(urlMoveFlag == "C"){
-			if(url == cmpUrl){
-				intervalCmpFunction = setInterval("dataPickCmp()", 1000);
-			}
-		}
-
-		if(urlMoveFlag == "G"){
-			if(url == grpUrl){
-				intervalGrpFunction = setInterval("dataPickGrp()", 1000);
-			}
-		}
-
-		if(urlMoveFlag == "K"){
-			if(url == keywordUrl){
-				intervalKeywordFunction = setInterval("dataPickKeyword()", 1000);
-			}
-		}
-
-		if(urlMoveFlag == "B"){
-			if(url == gBiddingUrl){
-				intervalBiddingFunction = setInterval("biddingFunction()", 1000);
-			}
-		}
-	}
+	$(document).ready(function(){
+		readFile("myInfo.ini","myInfo");
+		fnObj.usergrid.bind();
+		$("#ifrView").attr("src","");
+		readFile("usergrid.json","usergrid");
+	});
 
 	$(".nav-tabs a").click(function(event) {
 		event.preventDefault();
@@ -179,61 +138,59 @@
 	$("#btnBiddingStop").click(function(){ // 입찰 중지 버튼
 		$("#btnBiddingStart").show();
 		$("#btnBiddingStop").hide();
-	});
 
-	$("#testBtn").click(function(){
-		var moneyPopup = $("#ifrView").contents().find('div.popover-content');//금액 팝업
-		var moneyModal = $("#ifrView").contents().find('div.modal-body');//변경 완료 후 modal
-		var moneyModalBtn = $("#ifrView").contents().find('div.modal-footer button');//변경 완료 후 modal
-
-		var moneyTag = $("#ifrView").contents().find('td.cell-bid-amt.text-right.txt-r a');//금액 태그
-		var moneyTagText = $("#ifrView").contents().find('div.popover-content div.form-inline div span input');//금액 태그
-		var moneyTagButton = $("#ifrView").contents().find('div.popover-content div.form-inline div button.btn.btn-primary.editable-submit');//금액 변경 버튼
-		var moneyTagCloseButton = $("#ifrView").contents().find('div.popover-content div.form-inline div button.btn.btn-default.editable-cancel');//금액 취소 버튼
-		
-		var test = $("#ifrView").contents().find('td.cell-bid-amt.text-right.txt-r a');//금액 취소 버튼
-		test[0].innerText = 600;
-		/*moneyTagText.focus();
-		moneyTagText.removeClass();
-		moneyTagText.addClass("form-control input-sm ng-valid ng-not-empty ng-dirty ng-valid-number ng-touched");
-		moneyTagText.attr("style");
-		moneyTagText.val(600);*/
-		//moneyTagText.val(600).change();
-		//moneyTagText.trigger('change');
+		clearInterval(timerId);
 	});
-
-	$("#testBtnUrl").click(function(){
-		//$("#ifrView").attr("src","https://manage.searchad.naver.com/customers/948185/adgroups/grp-m001-01-000001720231439");
-		//$("#ifrView").attr("src","https://manage.searchad.naver.com/api/ncc/campaigns?customerId=948185");
-		$("#ifrView").attr("src","https://manage.searchad.naver.com/customers/948185/campaigns");
-		webview.loadURL("https://manage.searchad.naver.com/customers/948185/campaigns");		
-	});
+	
+	progressFunction = function(val){//프로그래스 펑션
+		$('.progress-bar').css('width', val+'%').attr('aria-valuenow', val);
+	}
 
 	$("#btnTestAjax").click(function(){
-		var timeStamp = new Date().getTime();//타임 스탬프 
-		var strSign = timeStamp+".GET./ncc/campaigns";//암호화 스트링
+		//그룹동기화
+		$("#groupDataMenu").click();
+		$(".nav-tabs a").click();
+		fnObj.groupGrid.bind();
+		fnObj.keywordGrid.bind();
 
-		var hash = CryptoJS.HmacSHA256(strSign, "AQAAAACa3yfsJbIscWvvuQFEcWcWCbxQTtTzf/r0XoAGUJGlYg==");
-		var hashInBase64 = CryptoJS.enc.Base64.stringify(hash);
+		chkVar =usergrid.getCheckedList(2);
+		
+		keyArData = new Array();
 
-		$.ajax({
-			type: "GET",
-			dataType: 'json',
-			//contentType: 'application/json', 
-			url : "https://api.naver.com/ncc/campaigns",
-			beforeSend: function(xhr, settings){
-				xhr.setRequestHeader("X-Timestamp", timeStamp);//타임스탬프
-				xhr.setRequestHeader("X-API-KEY", "01000000009adf27ec25b22c716befb9014471671645291126c56bf900f80bb2473388b633");//라이선스키
-				xhr.setRequestHeader("X-Customer", "948185");//내 아이디
-				xhr.setRequestHeader("X-Signature", hashInBase64);//sha256
-			},
-			success: function(data,test,ttest){
-				console.log(data);
-			},error:function(XMLHttpRequest, textStatus, errorThrows){ // erreur durant la requete
-      			console.log(XMLHttpRequest);
-      		}
-		});
+		for(var i=0; i < chkVar.length ; i++){
+			ajaxPick("GET" , "/ncc/keywords" , "?nccAdgroupId=" + chkVar[i].nccAdgroupId + "&recordSize=1000" , function(data){
+				chkVar[i].keyCout = data.length;
+				for(var j=0; j < data.length ; j++){
+					data[j].NudeKeyword = data[j].managedKeyword.pCPLMaxDepth;
+					data[j].nowRank = 0;
+					data[j].maxPay = 10000;
+					data[j].biddingPay = 100;
+					data[j].wantRank = 1;
+					data[j].___checked = {"0":true};
+					if(data[j].status == "ELIGIBLE"){
+						data[j].status = "ON";
+					}else{
+						data[j].status = "OFF";
+					}
+				}
+				keyArData.push(data);
+			});
+		}
+		groupGrid.setList(chkVar, null, "reload");
+		keywordGrid.setList(keyArData[0], null, "reload");
+		
+		groupGrid.setFocus(groupGridIndex);
+
+		writeFile(JSON.stringify(usergrid.getList()),"usergrid.json");
 	});
+
+	$("#btnTestAjax2").click(function(){
+		//입찰 시작
+
+
+	});
+
+
 </script>
 
 <script>

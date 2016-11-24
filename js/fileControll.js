@@ -4,7 +4,7 @@
 
     //파일쓰기------------------------
     writeFile = function(content,filepathCustom){
-        var filepath = "C:/";
+        var filepath = "./";
         filepath = filepath + filepathCustom;
 
         fs.writeFile(filepath, content, function (err) {
@@ -17,8 +17,8 @@
     }
 
     ////파일읽기------------------------
-    readFile = function(filepathCustom,gridName){
-        var filepath = "C:/";
+    readFile = function(filepathCustom,actionName){
+        var filepath = "./";
         filepath = filepath + filepathCustom; 
         
         fs.readFile(filepath, 'utf-8', function (err, data) {
@@ -27,8 +27,17 @@
                 return;
             }
             
-            if(gridName == "usergrid"){
-                campArData = JSON.parse(data)
+            if(actionName == "myInfo"){
+                var txtData = data.split(/\r\n/g);
+                g_licenseKey=txtData[0].replace(/(^\s*)|(\s*$)/gi, "");
+	            g_secretKey= txtData[1].replace(/(^\s*)|(\s*$)/gi, "");
+	            g_customerId= txtData[2].replace(/(^\s*)|(\s*$)/gi, "");
+                //campArData = JSON.parse(data)
+                //usergrid.setList(JSON.parse(data), null, "reload");
+            }
+            
+            if(actionName == "usergrid"){
+                campArData = JSON.parse(data);
                 usergrid.setList(JSON.parse(data), null, "reload");
             }
 

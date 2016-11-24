@@ -14,7 +14,7 @@
 								grpInfo.campId*/
 								var getColGroup = function () {
 										return [
-												{key: "CampName", label: "캠페인명", width: "200"},
+												{key: "pcChannelKey", label: "사이트명", width: "200"},
 												{key: "name", label: "그룹명", width: "*"},
 												{key: "no", label: "동기화", width: "100", align: "center", formatterLabel:"동기화",formatter: "checkbox"}
 										];
@@ -32,7 +32,7 @@
 														// this.list, this.page
 												//},
 												addClass: function () {
-														return (this.index % 2 == 0 ? "blue" : "white"); // red, green, blue, yellow, white, gray
+														return (this.index % 2 == 0 ? "blue" : "blue"); // red, green, blue, yellow, white, gray
 												}
 										},
 										page: {
@@ -52,9 +52,10 @@
 								window.groupGrid = fnObj.groupGrid.target;
 								var getColGroup = function () {
 										return [
-												{key: "CampName", label: "캠페인명", width: "200"},
 												{key: "name", label: "그룹명", width: "*"},
+												{key: "status", label: "상태", width: "200"},
 												{key: "keyCout", label: "키워드수", width: "*"},
+												{key: "biddingDtm", label: "입찰 시간", width: "*"},
 										];
 								};
 								groupGrid.setConfig({
@@ -71,7 +72,7 @@
 														keywordGrid.setList(keyArData[this.index], null, "reload");
 												},
 												addClass: function () {
-														return (this.index % 2 == 0 ? "blue" : "white"); // red, green, blue, yellow, white, gray
+														return (this.index % 2 == 0 ? "blue" : "blue"); // red, green, blue, yellow, white, gray
 												}
 										},
 										page: {
@@ -91,19 +92,12 @@
 								window.keywordGrid = fnObj.keywordGrid.target;
 								var getColGroup = function () {
 										return [
-												{key: "_CUD", label: "상태", width: "50", align: "center" ,
-													formatter:function(){
-															if(this.item._CUD == "U"){
-																return "수정";
-															}
-														}
-												},
-												{key: "Name", label: "키워드", width: "150"},
-												{key: "OnOff", label: "상태", width: "150"},
-												{key: "markettingUrl", label: "사이트", width: "150"},
-												{key: "Money", label: "입찰가", width: "150" ,formatter:"money"},
+												{key: "no", label: "체크", width: "100", align: "center", formatterLabel:"입찰",formatter: "checkbox"},
+												{key: "keyword", label: "키워드", width: "150"},
+												{key: "status", label: "상태", width: "150"},
+												{key: "bidAmt", label: "입찰가", width: "150" ,formatter:"money"},
 												{key: "NudeKeyword", label: "업체수", width: "100"},
-												{key: "nowRank", label: "현재순위", width: "*"},
+												{key: "nowRank", label: "현재순위", width: "*",align:"right"},
 												{key: "maxPay", label: "입찰 한도", width: "*",align:"right",
 													formatter: "money",
 														editor: {
@@ -124,6 +118,7 @@
 												{key: "wantRank", label: "목표 순위", width: "*" ,align:"right",
 													editor: {
 														type: "select",
+														updateWith: ["_CUD"],
 														optionValue: "CD",
 														optionText: "NM",
 														options: [
@@ -169,13 +164,13 @@
 										sort: true, //정렬을 원하지 않을 경우 (tip
 										colHeadTool: true, // column tool use
 										fitToWidth: false, // 너비에 자동 맞춤
-										fixedColSeq: 1,
+										//fixedColSeq: 1,
 										passiveMode:true,
 										colGroup: getColGroup(),
 										colHeadAlign: "center", // 헤드의 기본 정렬 값. colHeadAlign 을 지정하면 colGroup 에서 정의한 정렬이 무시되고 colHeadAlign : false 이거나 없으면 colGroup 에서 정의한 속성이 적용됩니다.
 										body: {
 												addClass: function () {
-														return (this.index % 2 == 0 ? "blue" : "white"); // red, green, blue, yellow, white, gray
+														return (this.index % 2 == 0 ? "blue" : "blue"); // red, green, blue, yellow, white, gray
 												}
 										},
 										page: {

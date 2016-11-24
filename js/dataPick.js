@@ -1,235 +1,193 @@
 (function(){
 
-	testPro = function(){
-		myProgress = new AXProgress();
-		myProgress.setConfig({
-			theme: "AXCircleProgress",
-			totalCount: 100,
-			width: 400,
-			top: 100,
-			title: "계정정보 동기화 중입니다...",
-			duration: 50 // 프로세스바의 애니메이션 속도 값 입니다.
-		});
+	g_licenseKey= "";//라이선스키
+	g_secretKey= "";//비밀키
 
-		mask.open();
-		myProgress.start(function(){
-			if(this.isEnd){
-				myProgress.close();
-				mask.close();
-			}else{
-				myProgress.update(); // 프로그레스의 다음 카운트를 시작합니다.
-			}
-		});
-	}
-	
-
+	g_customerId= "";//커스터머 아이디
 
 	campArData = new Array();//바른속기1 바른속기2 --> 계정정보
 	grpArData = new Array();//캠페인 안에 그룹   --> 계정정보
-	
 	chkVar = new Array();	//선택된 그룹 --> 자동입찰 상위
 	keyArData = new Array();//그룹 안에 키워드 --> 자동입찰 하위
 	
+	groupGridIndex = 0;
+	keywordGridIndex = 0;
 
+	//bidding.js
+	biddingFlag = 0;
+	rankPickFlag =0;
+
+	ajaxPick = function(pType, pUrl, pQuery,pCallback){
+		var baseUrl = "https://api.naver.com";
+		var sendUrl = baseUrl + pUrl;	
+		var QueryUrl = sendUrl+pQuery
+
+		var timeStamp = new Date().getTime();//타임 스탬프
+		var strSign = timeStamp + "." + pType + "."+ pUrl; //암호화 스트링
+		
+		var hash = CryptoJS.HmacSHA256(strSign, g_secretKey);//비밀키
+
+		var hashInBase64 = CryptoJS.enc.Base64.stringify(hash);
+
+		console.log("암호화 스트링>>>"+strSign);
+		console.log("비밀키>>"+g_secretKey);
+		console.log("라이선스키>>"+g_licenseKey);
+		console.log("암호화 한것>>"+hashInBase64);
+		console.log("커스토머아이디>>"+g_customerId);
+
+		$.ajax({
+			type: pType,
+			dataType: 'json',
+			url : QueryUrl,
+			async: false,
+			beforeSend: function(xhr, settings){
+				xhr.setRequestHeader("X-Timestamp", timeStamp);//타임스탬프
+				xhr.setRequestHeader("X-API-KEY", g_licenseKey);//라이선스키
+				xhr.setRequestHeader("X-Customer", g_customerId);//내 아이디
+				xhr.setRequestHeader("X-Signature", hashInBase64);//sha256
+			},
+			success: pCallback,
+			error:function(XMLHttpRequest, textStatus, errorThrows){ // erreur durant la requete
+      			alert("ERROR >>"+XMLHttpRequest.responseJSON.title);
+      		}
+		});
+	}
 	
-	grpUrl = "";
-	cmpUrl = "";
-	keywordUrl = "";
-	gBiddingUrl = "";
-	urlMoveFlag = "";
-	
-	gCampId ="";
-	gCampName="";
-	gGroupId = "";
-	grpUrlMoveFlag =0;
-	kewwordUrlMoveFlag =0;
+	$("#btnUser").click(function(){
+		//-------------------캠페인 정보---------------
+		ajaxPick("GET" , "/ncc/campaigns" , "" , function(data){
+			if(data.length > 0){
+				campArData = data;
+				grpArData = new Array();//캠페인 안에 그룹   --> 계정정보
 
-	//948185
-	$("#btnUser").click(function(){//계정 동기화 버튼
-		//init variable
-		campArData = new Array();
-		grpArData = new Array();
-		grpUrlMoveFlag = 0;
-
-		var url = "https://manage.searchad.naver.com/customers/"+customerId+"/campaigns";
-		cmpUrl = url; 
-		urlMove(url,"CAMP");
-
-		testPro();
+				for(var i=0; i < campArData.length ; i++){
+					//---------------그룹 정보---------------
+					ajaxPick("GET" , "/ncc/adgroups" , "?nccCampaignId=" + campArData[i].nccCampaignId + "&recordSize=1000" , function(data){
+						for(var i=0; i < data.length ; i++){
+							grpArData.push(data[i]);
+						}
+						usergrid.setList(grpArData, null, "reload");
+					});
+				}
+			}
+		});
 	});
 
 	$("#btnGroup").click(function(){//그룹 동기화 버튼
-		writeFile(JSON.stringify(usergrid.getList()),"usergrid.json");
+		//그룹동기화
 		$("#groupDataMenu").click();
 		$(".nav-tabs a").click();
 		fnObj.groupGrid.bind();
 		fnObj.keywordGrid.bind();
-		
+
 		chkVar =usergrid.getCheckedList(2);
-		//writeFile(JSON.stringify(usergrid.getCheckedList(2)),"usergridChk.json");
-
-		var url = "https://manage.searchad.naver.com/customers/"+customerId+"/adgroups/"+chkVar[0].id;
-		//https://manage.searchad.naver.com/customers/948185/adgroups/grp-m001-01-000001720231439
 		
-		keywordUrl = url;
-		gGroupId = chkVar[0].id;
 		keyArData = new Array();
-		kewwordUrlMoveFlag = 0;
 
-		urlMove(url,"KEYWORD");
-		testPro();
+		for(var i=0; i < chkVar.length ; i++){
+			ajaxPick("GET" , "/ncc/keywords" , "?nccAdgroupId=" + chkVar[i].nccAdgroupId + "&recordSize=1000" , function(data){
+				chkVar[i].keyCout = data.length;
+				for(var j=0; j < data.length ; j++){
+					data[j].NudeKeyword = data[j].managedKeyword.pCPLMaxDepth;
+					data[j].nowRank = 0;
+					data[j].maxPay = 10000;
+					data[j].biddingPay = 100;
+					data[j].wantRank = 1;
+					data[j].___checked = {"0":true};
+					if(data[j].status == "ELIGIBLE"){
+						data[j].status = "ON";
+					}else{
+						data[j].status = "OFF";
+					}
+				}
+				keyArData.push(data);
+			});
+		}
+		groupGrid.setList(chkVar, null, "reload");
+		keywordGrid.setList(keyArData[0], null, "reload");
+		
+		groupGrid.setFocus(groupGridIndex);
+
+		writeFile(JSON.stringify(usergrid.getList()),"usergrid.json");
+
+		pickBizmoney();
 	});
 
-	dataPickKeyword = function(){//키워드 데이터
-			var arKeyword	  =$("#ifrView").contents().find('table tr[id] span span');//키워드
-			var arMoney		  =$("#ifrView").contents().find('table tr[id] td a.js-editable');//금액
-			var arNudeKeyword =$("#ifrView").contents().find('table tr[id] td');//12개 단위
-			var arKeyRank     =$("#ifrView").contents().find('table tr[id] a.show-preview-cnt');//보기 버튼
+	pickBizmoney = function(){//비즈잔액 조회
+		ajaxPick("GET" , "/billing/bizmoney" , "" , function(data){
+			myBizMoney=numberWithCommas(data.bizmoney);
+			$("#myMoney").text("비즈잔액 : "+ myBizMoney +"원");
+		});
+	}
 
-			var marketUrl= $("#ifrView").contents().find('div dd p.ng-binding');//마케팅 url
-
-			if(arKeyword.length > 0){
-					clearInterval(intervalKeywordFunction);
-					
-					var keywordInfoP = new Array();
-					for(var i=0; i < arKeyword.length ; i++){
-							var keywordInfo = new Object();
-							
-
-							keywordInfo.Name = arKeyword[i].innerText;
-							keywordInfo.Money = arMoney[i].innerText; 
-							keywordInfo.GroupId = gGroupId;
-							keywordInfo.GroupUrl = "https://manage.searchad.naver.com/customers/"+customerId+"/adgroups/"+chkVar[kewwordUrlMoveFlag].id;
-							keywordInfo.nowRank = 0;
-							
-							
-							keywordInfo.wantRank = 1;//희망순위
-							keywordInfo.biddingPay = 500;//가감액
-							keywordInfo.maxPay = 500;//입찰 한도
-							keywordInfo.markettingUrl = marketUrl[0].innerHTML;//광고 사이트 주소
-
-							if(i == 0 ){//키워드 노출
-								keywordInfo.OnOff =arNudeKeyword[i+2].innerText;//   On/Off상태
-								keywordInfo.NudeKeyword =arNudeKeyword[i+11].innerText;//노출 가능 횟수
-							}else{
-								keywordInfo.OnOff =arNudeKeyword[(i*12)+2].innerText;//    On/Off상태
-								keywordInfo.NudeKeyword =arNudeKeyword[(i*12)-1].innerText;//노출 가능 횟수
-							}
-							keywordInfoP.push(keywordInfo);
-							
-					}
-					keyArData.push(keywordInfoP);
-
-					kewwordUrlMoveFlag++;
-
-					chkVar[kewwordUrlMoveFlag-1].keyCout = arKeyword.length;//키워드 수
-					chkVar[kewwordUrlMoveFlag-1].groupUrl = "https://manage.searchad.naver.com/customers/"+customerId+"/adgroups/"+ gGroupId;
-
-					if(chkVar.length == kewwordUrlMoveFlag){
-						keywordGrid.setList(keyArData[0], null, "reload");
-						groupGrid.setList(chkVar, null, "reload");
-						groupGrid.setFocus(0);
-					}
-					
-
-					if(chkVar.length > kewwordUrlMoveFlag){
-
-						var url = "https://manage.searchad.naver.com/customers/"+customerId+"/adgroups/"+chkVar[kewwordUrlMoveFlag].id;
-						keywordUrl = url;
-
-						gGroupId = chkVar[kewwordUrlMoveFlag].id;
-						urlMove(url,'KEYWORD');
-					}
-			}
+	 numberWithCommas = function(x) {
+	    return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 	}
 
 
-	dataPickCmp = function(){//camp data pick
-			var arTable=$("#ifrView").contents().find('table tr[id]');
-			var arCamp = $("#ifrView").contents().find('table tr td a.link');
-			campArData = new Array();
+	rankpickCallFlag = 0;
 
-			if(arTable.length >0){
-					clearInterval(intervalCmpFunction);
-					
-					for(var i=0; i < arCamp.length ; i++){
-							var campInfo = new Object();
-							campInfo.name = arCamp[i].innerText;
-							campInfo.id = arTable[i].id.replace("wgt-","");
-							campInfo.flag = arCamp[i].parentElement.previousElementSibling.outerText;
-							
-							gCampId = campInfo.id;
+	rankPickCallFunction =function(){
+		chkKeyWordIndex = keywordGrid.getCheckedListWithIndex(0);
+		if(chkKeyWordIndex.length > rankpickCallFlag){
+			keyArDataIndex =keyArData[groupGridIndex][chkKeyWordIndex[rankpickCallFlag].index];
+			//rankPickFunction(encodeURI(keyArDataIndex.keyword) , "www.dainsg.com", chkKeyWordIndex[rankpickCallFlag].index); //Test
+			rankPickFunction(encodeURI(keyArDataIndex.keyword) , chkVar[groupGridIndex].pcChannelKey, chkKeyWordIndex[rankpickCallFlag].index); //Product
+			rankpickCallFlag++;
+		}else{
+			clearInterval(timerId);
+			if(chkVar.length > groupGridIndex+1){
+				groupGridIndex++;
+				groupGrid.setFocus(groupGridIndex);
+				keywordGrid.setList(keyArData[groupGridIndex], null, "reload");
 
-							campArData.push(campInfo);
-					}//캠페인 아이디 네임 가져오기
+				rankpickCallFlag = 0;
+				timerId = setInterval("rankPickCallFunction()", 5000);
 
-					for(var i=0 ; i<campArData.length;i++){
-							
-							if(campArData.length == grpUrlMoveFlag){
-								usergrid.setList(grpArData, null, "reload");
-								$("#userDataGrid_AX_checkAll_AX_0_AX_2").hide();
-								break;
-							}
-							
-							var url = "https://manage.searchad.naver.com/customers/"+customerId+"/campaigns/"+campArData[grpUrlMoveFlag].id+"?recordSize=1001";
-							webview.loadURL(url);
-							grpUrl = url;
-
-							if(campArData.length > grpUrlMoveFlag){
-								arCamp[grpUrlMoveFlag].click();
-								urlMove(url,'GROUP');
-							}
-					}
+			}else{
+				groupGridIndex = 0;
+				groupGrid.setFocus(groupGridIndex);
+				keywordGrid.setList(keyArData[groupGridIndex], null, "reload");
+				
+				rankpickCallFlag = 0;
+				timerId = setInterval("rankPickCallFunction()", 5000);
+				
 			}
+		}
+
+		pickBizmoney();
+	}
+
+	rankPickFunction = function(pUrl, markUrl, index){
+		$.ajax({
+			type: "GET",
+			dataType: 'html',
+			url : "https://search.naver.com/search.naver?ie=UTF-8&query="+pUrl,
+			async: false,
+			beforeSend: function(xhr, settings){
+			},
+			success: function(data){
+				//console.log(data);
+				naverRank = data.match(/<a class=\"lnk_url\".*?>(.*?)<\/a>/g);
+				for(var i=0; i < naverRank.length ; i++){
+					if(naverRank[i].indexOf(markUrl) > -1){
+						keyArData[groupGridIndex][index].nowRank = i+1;
+					}
+				}
+
+				biddingFunction(groupGridIndex,index);
+
+				
+				keywordGrid.setList(keyArData[groupGridIndex], null, "reload");
+				keywordGrid.setFocus(index);
+			},
+			error:function(XMLHttpRequest, textStatus, errorThrows){ // erreur durant la requete
+      			alert("ERROR >>");
+      		}
+		});
 	}
 
 
-	dataPickGrp = function(){//group data pick
-			var grpList = $("#ifrView").contents().find('li.active.open-list ul li a');
-			var urlList = $("#ifrView").contents().find('div table tbody tr td');
-
-			if(grpList.length > 0){
-					clearInterval(intervalGrpFunction);
-					
-					for(var i =0; i < grpList.length ; i++){
-								var grpInfo = new Object();
-								grpInfo.id = grpList[i].attributes[1].value;
-								grpInfo.name = grpList[i].innerText;
-								grpInfo.campId = gCampId;
-								grpInfo.CampName = campArData[grpUrlMoveFlag].name;
-								grpInfo.GroupUrl = "https://manage.searchad.naver.com/customers/"+customerId+"/adgroups/"+grpList[i].attributes[1].value;
-					}
-
-					var url = "https://manage.searchad.naver.com/customers/"+customerId+"/campaigns?recordSize=1001";
-					cmpUrl = url;
-					if(campArData.length < grpUrlMoveFlag){
-										
-					}else{
-							urlMove(url,"CAMP");
-							grpUrlMoveFlag++;
-					}
-			}
-	}
-
-	urlMove = function(url,flag){
-		if(flag == "CAMP"){
-			urlMoveFlag = "C"
-		}
-
-		if(flag == "GROUP"){
-			urlMoveFlag = "G"
-		}
-
-		if(flag == "KEYWORD"){
-			urlMoveFlag = "K"
-		}
-
-		if(flag == "BIDDING"){
-			urlMoveFlag = "B"
-		}
-
-		$("#ifrView").attr("src",url);
-
-	}//Url Move Func
+	
 
 }());
