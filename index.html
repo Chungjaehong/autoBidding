@@ -21,40 +21,14 @@
   <style type="css/text">
 
   </style>
-  <body>
-			<input type="button" id="btnTestAjax" value="sha256 테스트" class="AXButton Blue">
-      <input type="button" id="btnTestAjax2" value="sha256+base64 테스트" class="AXButton Blue">
-      <input type="button" id="btnTestAjax3" value="sha256 테스트(jsonp)" class="AXButton Blue">
-      <input type="button" id="btnTestAjax4" value="sha256+base64 테스트(jsonp)" class="AXButton Blue">
+  <body style="-webkit-app-region: drag">
       <input type="button" id="btnTestAjax5" value="노 권장" class="AXButton Blue">
   </body>
 
 <script>
 	
-	$("#btnTestAjax").click(function(){
-		var timeStamp = new Date().getTime();//타임 스탬프 
-		var strSign = timeStamp+".GET./ncc/campaigns";//암호화 스트링
-
-		var hash = CryptoJS.HmacSHA256(strSign, "AQAAAACa3yfsJbIscWvvuQFEcWcWCbxQTtTzf/r0XoAGUJGlYg==");
-		var hashInBase64 = CryptoJS.enc.Base64.stringify(hash);
-
-		$.ajax({
-			type: "GET",
-			dataType: 'json',
-			//contentType: 'application/json', 
-			url : "https://api.naver.com/ncc/campaigns",
-			beforeSend: function(xhr, settings){
-				xhr.setRequestHeader("X-Timestamp", timeStamp);//타임스탬프
-				xhr.setRequestHeader("X-API-KEY", "01000000009adf27ec25b22c716befb9014471671645291126c56bf900f80bb2473388b633");//라이선스키
-				xhr.setRequestHeader("X-Customer", "948185");//내 아이디
-				xhr.setRequestHeader("X-Signature", hashInBase64);//sha256
-			},
-			success: function(data,test,ttest){
-				console.log(data);
-			},error:function(XMLHttpRequest, textStatus, errorThrows){ // erreur durant la requete
-        console.log(XMLHttpRequest);
-      }
-		});
+	$("#btnTestAjax5").click(function(){
+		location.replace("main.html");
 	});
 </script>
 
