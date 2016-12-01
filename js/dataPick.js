@@ -28,7 +28,10 @@
 		var hash = CryptoJS.HmacSHA256(strSign, g_secretKey);//비밀키
 
 		var hashInBase64 = CryptoJS.enc.Base64.stringify(hash);
-
+		console.log("요청URL>>"+pUrl);
+		console.log("쿼리스트링>>>"+pQuery);
+		
+		console.log("타임스탬프>>>"+timeStamp);
 		console.log("암호화 스트링>>>"+strSign);
 		console.log("비밀키>>"+g_secretKey);
 		console.log("라이선스키>>"+g_licenseKey);
@@ -52,7 +55,47 @@
       		}
 		});
 	}
-	
+
+	ajaxBidding = function(pType, pUrl, pQuery, pData,pCallback){
+			var rp = require('request-promise');
+			
+			var baseUrl = "https://api.naver.com";
+			var sendUrl = baseUrl + pUrl;	
+			var QueryUrl = sendUrl+pQuery
+
+			var timeStamp = new Date().getTime();//타임 스탬프
+			var strSign = timeStamp + "." + pType + "."+ pUrl; //암호화 스트링
+			
+			var hash = CryptoJS.HmacSHA256(strSign, g_secretKey);//비밀키
+
+			var hashInBase64 = CryptoJS.enc.Base64.stringify(hash);	
+			
+			var options = {
+				method: pType,
+				"rejectUnauthorized": false,
+				uri: QueryUrl,
+				headers: {
+					'User-Agent': 'User-Agent: Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/53.0.2785.113 Electron/1.4.0 Safari/537.36',
+					"X-Timestamp": timeStamp,
+					"X-API-KEY": g_licenseKey,
+					"X-Customer": g_customerId,
+					"X-Signature": hashInBase64//sha256
+				},
+				body:pData,
+				json: true // Automatically parses the JSON string in the response 
+			};
+			
+			rp(options)
+				.then(pCallback)
+				.catch(function (err) {
+					alert.log('입찰 에러');
+				});
+	}
+
+
+
+
+
 	$("#btnUser").click(function(){
 		//-------------------캠페인 정보---------------
 		ajaxPick("GET" , "/ncc/campaigns" , "" , function(data){

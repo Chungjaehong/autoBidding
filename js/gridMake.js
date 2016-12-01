@@ -25,6 +25,7 @@
 										colHeadTool: true, // column tool use
 										fitToWidth: false, // 너비에 자동 맞춤
 										colGroup: getColGroup(),
+										height : 500,
 										colHeadAlign: "center", // 헤드의 기본 정렬 값. colHeadAlign 을 지정하면 colGroup 에서 정의한 정렬이 무시되고 colHeadAlign : false 이거나 없으면 colGroup 에서 정의한 속성이 적용됩니다.
 										body: {
 												//onclick: function () {
@@ -62,9 +63,11 @@
 										targetID: "groupDataGrid",
 										sort: true, //정렬을 원하지 않을 경우 (tip
 										colHeadTool: true, // column tool use
-										fitToWidth: false, // 너비에 자동 맞춤
+										fitToWidth: true, // 너비에 자동 맞춤
 										colGroup: getColGroup(),
 										colHeadAlign: "center", // 헤드의 기본 정렬 값. colHeadAlign 을 지정하면 colGroup 에서 정의한 정렬이 무시되고 colHeadAlign : false 이거나 없으면 colGroup 에서 정의한 속성이 적용됩니다.
+										passiveMode:true,
+										
 										body: {
 												onclick: function () {
 														//toast.push(Object.toJSON({"event": "click", "index": this.index, "r": this.r, "c": this.c, "item": this.item}));
@@ -94,10 +97,10 @@
 										return [
 												{key: "no", label: "체크", width: "100", align: "center", formatterLabel:"입찰",formatter: "checkbox"},
 												{key: "keyword", label: "키워드", width: "150"},
-												{key: "status", label: "상태", width: "150"},
-												{key: "bidAmt", label: "입찰가", width: "150" ,formatter:"money"},
-												{key: "NudeKeyword", label: "업체수", width: "100"},
-												{key: "nowRank", label: "현재순위", width: "*",align:"right"},
+												{key: "status", label: "상태", width: "100"},
+												{key: "bidAmt", label: "입찰가", width: "100" ,formatter:"money"},
+												{key: "NudeKeyword", label: "업체수", width: "80"},
+												{key: "nowRank", label: "현재순위", width: "80",align:"right"},
 												{key: "maxPay", label: "입찰 한도", width: "*",align:"right",
 													formatter: "money",
 														editor: {

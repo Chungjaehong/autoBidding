@@ -23,20 +23,43 @@
 		if(keyArData[groupGridIndex][index].nowRank == keyArData[groupGridIndex][index].wantRank ){//목표순위 일때
 			return;
 		}
-
-		if(keyArData[groupGridIndex][index].nowRank < keyArData[groupGridIndex][index].wantRank ){//원하는 순위가 더클때
+		// 3 < 1 false
+		// 4 < 1 false
+		// 4 < 5 true
+		// 0 < 5 true 
+		if(keyArData[groupGridIndex][index].nowRank < keyArData[groupGridIndex][index].wantRank ){
 			varBidAmt = keyArData[groupGridIndex][index].bidAmt - keyArData[groupGridIndex][index].biddingPay;
-			querString = keyArData[groupGridIndex][index].nccKeywordId+"?nccAdgroupId="+ keyArData[groupGridIndex][index].nccAdgroupId+"&bidAmt=" + keyArData[groupGridIndex][index].bidAmt+"&useGroupBidAmt=false" ;
-			ajaxPick("PUT" , "/ncc/keywords/" , querString , function(data){});	
+			querString = "?fields=bidAmt";
+
+			var sendData = {
+				bidAmt: keyArData[groupGridIndex][index].bidAmt,
+				useGroupBidAmt: keyArData[groupGridIndex][index].useGroupBidAmt,
+				nccAdgroupId:keyArData[groupGridIndex][index].nccAdgroupId
+			};
+
+			ajaxBidding("PUT" , "/ncc/keywords/"+keyArData[groupGridIndex][index].nccKeywordId , querString , sendData, function(data){
+				console.log("입찰 완료");
+			});	
 			return;		
 		}
-
-		if(keyArData[groupGridIndex][index].nowRank > keyArData[groupGridIndex][index].wantRank ){//원하는 순위가 더클때
+		// 3 > 1 true
+		// 2 > 1 true
+		if(keyArData[groupGridIndex][index].nowRank > keyArData[groupGridIndex][index].wantRank ){
 			varBidAmt = keyArData[groupGridIndex][index].bidAmt + keyArData[groupGridIndex][index].biddingPay;
-			querString = keyArData[groupGridIndex][index].nccKeywordId+"?nccAdgroupId="+ keyArData[groupGridIndex][index].nccAdgroupId+"&bidAmt=" + keyArData[groupGridIndex][index].bidAmt+"&useGroupBidAmt=false" ;
-			ajaxPick("PUT" , "/ncc/keywords/" , querString , function(data){
+			
+			if(varBidAmt > keyArData[groupGridIndex][index].maxPay){//한도
+				varBidAmt = keyArData[groupGridIndex][index].maxPay;
+			}
 
-			});
+			var sendData = {
+				bidAmt: keyArData[groupGridIndex][index].bidAmt,
+				useGroupBidAmt: keyArData[groupGridIndex][index].useGroupBidAmt,
+				nccAdgroupId:keyArData[groupGridIndex][index].nccAdgroupId
+			};
+
+			ajaxBidding("PUT" , "/ncc/keywords/"+keyArData[groupGridIndex][index].nccKeywordId , querString , sendData, function(data){
+				console.log("입찰 완료");
+			});	
 			return;		
 		}
 
