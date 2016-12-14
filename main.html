@@ -16,6 +16,7 @@
 		<script>window.$ = window.jQuery = require('./js/jquery-3.1.0.js');</script>
 		<script src="./js/axis/AXJ.js"></script>
 		<script src="./js/axis/AXGrid.js"></script>
+		<script src="./js/axis/AXModal.js"></script>
 		<script src="./js/bootstrap.min.js"></script>
 		<script src="./js/hmac-sha256.js"></script>
 		<script src="./js/enc-base64-min.js"></script>
@@ -32,9 +33,7 @@
 				<div class="col-md-12">
 					<div class="row">
 						<div class="col-md-6">
-							<input type="button" id="btnTestAjax" value="ajaxTest" class="AXButton Blue">
 							<input type="button" id="btnTestAjax2" value="ajaxTest2" class="AXButton Blue">
-							<input type="button" id="btnTestAjax3" value="ajaxTest3" class="AXButton Blue">
 							<input type="button" id="btnUser" value="계정 동기화" class="AXButton Blue">
 						</div>
 						<div class="col-md-6 text-right">
@@ -75,8 +74,58 @@
 								</div>
 							</div>
 						</div>
-						<div class="col-md-4">
-							<label>라벨 라벨</label>
+						<div class="col-md-3">
+							<font size="3em" color="#6799FF" id="progressInfo"></font>
+						</div>
+						<div class="col-md-1">
+							<img src="./img/viewLoading.gif" height="20px" id="loadingImg"/>   
+						</div>
+
+					</div>
+					<div style="display:none;">
+						<div id="modalContent" style="padding:20px;">
+							<table>
+								<tr>
+									<td> <h5>  [최대 입찰가 변경]</h5> </td>
+									<td style="padding:0 0 0 10px"> <h5>[목표 순위 변경]</h5>   </td>
+								</tr>
+								<tr>
+									<td>
+										<input type="button" id="btnBiddingAllGroup" value="전체 그룹" class="AXButton Blue">
+										<input type="button" id="btnBiddingNowGroup" value="현재 그룹" class="AXButton Blue">
+									</td>
+									<td td style="padding:0 0 0 10px">
+										<input type="button" id="btnRankAllGroup" value="전체 그룹" class="AXButton green">
+										<input type="button" id="btnRankNowGroup" value="현재 그룹" class="AXButton green">
+									</td>
+								</tr>
+							</table>
+						</div>
+					</div>
+					<div style="display:none;">
+						<div id="modalBiding" style="padding:20px;">
+							변경 하실 입찰 변경가 기입. 70원 ~ 
+							</br>
+							<input type="text" id="settingValueBidding">
+							<input type="button" id="btnBiddingGroup" value="확인" class="AXButton green">
+						</div>
+						
+					</div>
+					<div style="display:none;">
+						<div id="modalRank" style="padding:20px;">
+							변경 하실 목표순위 선택. 
+							</br>
+							<select name = "settingValueRank" id="settingValueRank">
+								<option value="1">1</option><option value="2">2</option>
+								<option value="3">3</option><option value="4">4</option>
+								<option value="5">5</option><option value="6">6</option>
+								<option value="7">7</option><option value="8">8</option>
+								<option value="9">9</option><option value="10">10</option>
+								<option value="11">11(비즈)</option><option value="12">12(비즈)</option>
+								<option value="13">13(비즈)</option><option value="14">14(비즈)</option>
+								<option value="15">15(비즈)</option>
+							</select>
+							<input type="button" id="btnRankGroup" value="확인" class="AXButton green">
 						</div>
 					</div>
 				</div>
@@ -90,7 +139,8 @@
 	$("#btnSetting").hide();
 	$("#btnBiddingStart").hide();
 	$("#btnBiddingStop").hide();
-	
+	$("#loadingImg").hide();
+
 	require('./js/gridMake.js');
 	require('./js/dataPick.js');
 	require('./js/fileControll.js');
@@ -101,6 +151,8 @@
 		fnObj.usergrid.bind();
 		$("#ifrView").attr("src","");
 		readFile("usergrid.json","usergrid");
+
+
 	});
 
 	$(".nav-tabs a").click(function(event) {
@@ -140,66 +192,137 @@
 		readFile("usergrid.json","usergrid");
 	});
 
+
+	$("#btnBiddingStart").click(function(){ //입찰 시작 버튼
+		$("#btnBiddingStart").hide();
+		$("#btnBiddingStop").show();
+		$("#loadingImg").show();
+
+		progressFunction(100,"입찰 시작");
+
+		groupGridIndex = 0;
+		keywordGridIndex = 0;
+
+		groupGrid.setFocus(groupGridIndex);
+
+		chkKeyWord =keywordGrid.getCheckedList(0);
+		chkKeyWordIndex = keywordGrid.getCheckedListWithIndex(0);
+
+		rankpickCallFlag = 0;
+		timerId = setInterval("rankPickCallFunction()", 5000); 
+		keywordGrid.setFocus(0);
+	});
+
 	$("#btnBiddingStop").click(function(){ // 입찰 중지 버튼
 		$("#btnBiddingStart").show();
 		$("#btnBiddingStop").hide();
-
+		$("#loadingImg").hide();
 		clearInterval(timerId);
+
+		progressFunction(0,"입찰 중지");
 	});
 	
 	$("#btnSetting").click(function(){ // 설정 버튼
-		console.log("asdfasdfsafd");
+		var myModal = new AXModal();
+		myModal.openDiv({
+				modalID:"modalDiv01",
+				targetID:"modalContent",
+				width:450,
+				top:150
+		});
 	});
 
+	//*********************셋팅 UI***************************** 
+	var biddingSettingFlag = "";
+	$("#btnBiddingNowGroup").click(function(){ //입찰가 변경 현재
+		biddingSettingFlag = "Now";
+		biddingSettingFunction("modalDiv02","modalBiding");
+	});
 
-	progressFunction = function(val){//프로그래스 펑션
-		$('.progress-bar').css('width', val+'%').attr('aria-valuenow', val);
+	$("#btnBiddingAllGroup").click(function(){ //입찰가 변경 전체
+		biddingSettingFlag = "All";
+		biddingSettingFunction("modalDiv02","modalBiding");
+
+	});
+
+	$("#btnRankNowGroup").click(function(){ //순위 셋팅 현재
+		biddingSettingFlag = "All_R";
+		biddingSettingFunction("modalDiv03","modalRank");
+
+	});
+	
+	$("#btnRankAllGroup").click(function(){ //순위 셋팅 전체
+		biddingSettingFlag = "Now_R";
+		biddingSettingFunction("modalDiv03","modalRank");
+	});
+	
+	//*********************셋팅 확인 버튼 UI*****************************
+	$("#btnBiddingGroup").click(function(){ //입찰가 셋팅 확인
+		console.log();
+		console.log(">>>"+groupGridIndex);
+		
+		keywordSettingUpdateFunction($("#settingValueBidding").val());
+		keywordGrid.setList(keyArData[groupGridIndex], null, "reload");
+		var myModal = new AXModal();
+		myModal.close('modalDiv02');
+	});
+
+	$("#btnRankGroup").click(function(){ //순위 셋팅 확인
+		console.log($("#settingValueRank option:selected").val());
+		console.log(">>>"+groupGridIndex);
+		
+		keywordSettingUpdateFunction($("#settingValueRank option:selected").val());
+		keywordGrid.setList(keyArData[groupGridIndex], null, "reload");
+		var myModal = new AXModal();
+		myModal.close('modalDiv03');
+	});
+
+	keywordSettingUpdateFunction = function(val){
+		if(biddingSettingFlag=="Now"){
+			for(var i=0; i < keyArData[groupGridIndex].length ; i++){
+				keyArData[groupGridIndex][i].maxPay = val; 
+			}
+		}
+		if(biddingSettingFlag=="All"){
+			for(var i=0; i < keyArData.length ; i++){
+				for(var j=0; j < keyArData[i].length ; j++){
+					keyArData[i][j].maxPay = val;
+				}
+			}
+		}
+
+		if(biddingSettingFlag=="Now_R"){
+			for(var i=0; i < keyArData[groupGridIndex].length ; i++){
+				keyArData[groupGridIndex][i].wantRank = val; 
+			}
+		}
+		if(biddingSettingFlag=="All_R"){
+			for(var i=0; i < keyArData.length ; i++){
+				for(var j=0; j < keyArData[i].length ; j++){
+					keyArData[i][j].wantRank = val;
+				}
+			}
+		}
 	}
 
-	$("#btnTestAjax").click(function(){
-		//그룹동기화
-		$("#groupDataMenu").click();
-		$(".nav-tabs a").click();
-		fnObj.groupGrid.bind();
-		fnObj.keywordGrid.bind();
+	biddingSettingFunction = function(idModal,modalTarget){
+		var myModal = new AXModal();
+		myModal.openDiv({
+				modalID: idModal,
+				targetID: modalTarget,
+				width:250,
+				top:180
+		});
+	}
 
-		chkVar =usergrid.getCheckedList(2);
-		
-		keyArData = new Array();
-
-		for(var i=0; i < chkVar.length ; i++){
-			ajaxPick("GET" , "/ncc/keywords" , "?nccAdgroupId=" + chkVar[i].nccAdgroupId + "&recordSize=1000" , function(data){
-				chkVar[i].keyCout = data.length;
-				for(var j=0; j < data.length ; j++){
-					data[j].NudeKeyword = data[j].managedKeyword.pCPLMaxDepth;
-					data[j].nowRank = 0;
-					data[j].maxPay = 10000;
-					data[j].biddingPay = 100;
-					data[j].wantRank = 1;
-					data[j].___checked = {"0":true};
-					if(data[j].status == "ELIGIBLE"){
-						data[j].status = "ON";
-					}else{
-						data[j].status = "OFF";
-					}
-				}
-				keyArData.push(data);
-			});
-		}
-		groupGrid.setList(chkVar, null, "reload");
-		keywordGrid.setList(keyArData[0], null, "reload");
-		
-		groupGrid.setFocus(groupGridIndex);
-
-		writeFile(JSON.stringify(usergrid.getList()),"usergrid.json");
-	});
+	progressFunction = function(val,textInfo){//프로그래스 펑션
+		$('.progress-bar').css('width', val+'%').attr('aria-valuenow', val);
+		$("#progressInfo").text(textInfo);
+	}
 
 	$("#btnTestAjax2").click(function(){
-		//입찰 시작
-
-
+		
 	});
-
 
 </script>
 

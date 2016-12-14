@@ -96,7 +96,8 @@
 
 
 
-	$("#btnUser").click(function(){
+	$("#btnUser").click(function(){//계정 동기화
+		progressFunction(30,"계정 동기화");
 		//-------------------캠페인 정보---------------
 		ajaxPick("GET" , "/ncc/campaigns" , "" , function(data){
 			if(data.length > 0){
@@ -114,10 +115,14 @@
 				}
 			}
 		});
+
+		progressFunction(100,"계정 동기화");
 	});
 
 	$("#btnGroup").click(function(){//그룹 동기화 버튼
 		//그룹동기화
+		progressFunction(10,"그룹 동기화");
+
 		$("#groupDataMenu").click();
 		$(".nav-tabs a").click();
 		fnObj.groupGrid.bind();
@@ -152,7 +157,8 @@
 		groupGrid.setFocus(groupGridIndex);
 
 		writeFile(JSON.stringify(usergrid.getList()),"usergrid.json");
-
+		
+		progressFunction(100,"그룹 동기화");
 		pickBizmoney();
 	});
 
@@ -167,15 +173,16 @@
 	    return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 	}
 
-
 	rankpickCallFlag = 0;
 
 	rankPickCallFunction =function(){
+		
 		chkKeyWordIndex = keywordGrid.getCheckedListWithIndex(0);
 		if(chkKeyWordIndex.length > rankpickCallFlag){
 			keyArDataIndex =keyArData[groupGridIndex][chkKeyWordIndex[rankpickCallFlag].index];
 			//rankPickFunction(encodeURI(keyArDataIndex.keyword) , "www.dainsg.com", chkKeyWordIndex[rankpickCallFlag].index); //Test
-			rankPickFunction(encodeURI(keyArDataIndex.keyword) , chkVar[groupGridIndex].pcChannelKey, chkKeyWordIndex[rankpickCallFlag].index); //Product
+			rankPickFunction(keyArDataIndex.keyword,encodeURI(keyArDataIndex.keyword) , chkVar[groupGridIndex].pcChannelKey, chkKeyWordIndex[rankpickCallFlag].index); //Product
+			
 			rankpickCallFlag++;
 		}else{
 			clearInterval(timerId);
@@ -201,7 +208,8 @@
 		pickBizmoney();
 	}
 
-	rankPickFunction = function(pUrl, markUrl, index){
+	rankPickFunction = function(pKeyword,pUrl, markUrl, index){//순위 정보 크롤링
+		
 		$.ajax({
 			type: "GET",
 			dataType: 'html',
@@ -217,9 +225,11 @@
 						keyArData[groupGridIndex][index].nowRank = i+1;
 					}
 				}
+				
 
 				biddingFunction(groupGridIndex,index);
 
+				progressFunction(100,"["+pKeyword+"] 입찰 중...");
 				
 				keywordGrid.setList(keyArData[groupGridIndex], null, "reload");
 				keywordGrid.setFocus(index);
