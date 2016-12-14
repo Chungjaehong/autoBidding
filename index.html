@@ -23,12 +23,58 @@
   </style>
   <body style="-webkit-app-region: drag">
       <input type="button" id="btnTestAjax5" value="노 권장" class="AXButton Blue">
+	  <input type="button" id="btnTestAjax" value="노 권장" class="AXButton Blue">
   </body>
 
 <script>
-	
+	fs = require('fs');
+	//download = require('download');
+
+	download = require('download-git-repo');
+
+	asar = require('original-fs-asar');
+ 
+	src = '/autobidding-win32-x64/resources/';
+	dest = 'app.asar';
+
+
 	$("#btnTestAjax5").click(function(){
 		location.replace("main.html");
+	});
+
+	$("#btnTestAjax").click(function(){
+		download('github:Chungjaehong/autoBidding', 'test/tmp', function(err) {
+			if (err) return done(err);
+			done();
+		});
+		//download('Chungjaehong/autoBidding/raw/master/autobidding-win32-x64/resources/app.asar').then(data => {
+/*   			 fs.writeFile('./', data, function (err) {
+            	if(err){
+                	console.log(err);
+                	return;
+            	}
+
+        	});
+
+		   fs.write(__dirname+'/autobidding-win32-x64/resources/app.asar', data, 0,data.lenght, null, function (err) {
+            	if(err){
+                	console.log(err);
+                	return;
+            	}
+
+        	});  
+		});
+		download('https://github.com/Chungjaehong/autoBidding/raw/master/autobidding-win32-x64/resources/app.asar').pipe(fs.createWriteStream('./autobidding-win32-x64/resources/app.asar'));
+
+		download('https://github.com/Chungjaehong/autoBidding/raw/master/autobidding-win32-x64/resources/app.asar', 'dist').then(() => {
+			console.log('done!');
+		});
+
+		Promise.all(['https://github.com/Chungjaehong/autoBidding/raw/master/autobidding-win32-x64/resources/app.asar'].map(x => download(x, 'dist'))).then(() => {
+			console.log('files downloaded!');
+		});
+*/
+
 	});
 </script>
 
