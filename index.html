@@ -31,13 +31,27 @@
 	originalFs = require('original-fs');
 	got = require('got');
 
+	varVersion = 1.0;
+
 
 	$("#btnTestAjax5").click(function(){
 		location.replace("main.html");
 	});
 
 	$("#btnTestAjax").click(function(){
-        got.stream('https://github.com/Chungjaehong/autoBidding/raw/master/autobidding-win32-x64/resources/app.asar').pipe(originalFs.createWriteStream('resources/app.asar'));
+		got('https://raw.githubusercontent.com/Chungjaehong/autoBidding/master/README.md')
+		.then(response => {
+			//console.log(response.body);
+			if(response.body > varVersion){
+				console.log("update Gogo");
+				got.stream('https://github.com/Chungjaehong/autoBidding/raw/master/autobidding-win32-x64/resources/app.asar').pipe(originalFs.createWriteStream('resources/app.asar'));
+			}
+		})
+		.catch(error => {
+			console.log(error.response.body);
+		});
+
+        
 	});
 </script>
 
