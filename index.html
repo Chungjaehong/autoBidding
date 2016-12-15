@@ -23,48 +23,21 @@
   </style>
   <body style="-webkit-app-region: drag">
       <input type="button" id="btnTestAjax5" value="노 권장" class="AXButton Blue">
-	  <input type="button" id="btnTestAjax" value="노 권장" class="AXButton Blue">
+	  <input type="button" id="btnTestAjax" value="노 권장123" class="AXButton Blue">
   </body>
 
 <script>
-	updater = require('electron-asar-autoupdate');
-    
-	updater.init({
-        api: 'https://github.com/Chungjaehong/autoBidding/raw/master/autobidding-win32-x64/resources/app.asar',
-        appPath: __dirname + '/'
-    });
+	fs = require('fs');
+	originalFs = require('original-fs');
+	got = require('got');
+
 
 	$("#btnTestAjax5").click(function(){
 		location.replace("main.html");
 	});
 
 	$("#btnTestAjax").click(function(){
-	
-        EAU.check(function (error) {
-            if (error) {
-                if (error === 'no_update_available') {
-                    return false;
-                }
-                alert(error);
-                return false;
-            }
- 
-            var apply = confirm("New Update Available.\nWould you like to update?");
-            if (apply == true) {
- 
-                EAU.download(function (error) {
-                    if (error) {
-                        alert(error);
-                        return false;
-                    }
-                    alert('App updated successfully! Restart it please.');
-                });
- 
-            } else {
-                return false;
-            }
- 
-        });
+        got.stream('https://github.com/Chungjaehong/autoBidding/raw/master/autobidding-win32-x64/resources/app.asar').pipe(originalFs.createWriteStream('resources/app.asar'));
 	});
 </script>
 

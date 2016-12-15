@@ -9,9 +9,11 @@
     "package": "asar pack ./autobidding-win32-x64/resources/app/ ./autobidding-win32-x64/resources/app.asar &&rd ./autobidding-win32-x64/resources/app /S /Q"
   },
   "dependencies": {
-    "electron": "^1.4.10",
+    "electron": "^1.4.12",
     "electron-packager": "^8.3.0",
     "electron-prebuilt": "^1.4.10",
+    "fs": "0.0.1-security",
+    "got": "^6.6.3",
     "request": "^2.79.0",
     "request-promise": "^4.1.1"
   }
