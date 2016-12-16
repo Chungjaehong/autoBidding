@@ -12,26 +12,18 @@ const {Menu} = require('electron')
 
 const template = [
   {
-    label: '로그인',
+    label: '설정',
     submenu: [
       {
         label: '네이버',
 		    enabled : true,
 		    click (item, menuClick) {
-          mainWindow.loadURL(`file:${__dirname}/main.html`)
+          mainWindow.loadURL(`file:${__dirname}/setting.html`)
         } 
-      },
-	  {
-        label: '다음',
-		    //enabled : false
-        enabled : true,
-		    click (item, menuClick) {
-          mainWindow.loadURL(`file:${__dirname}/test.html`)
-        }
       }
     ]
   },
-  {
+  /*{
     label: 'View',
     submenu: [
       {
@@ -49,7 +41,7 @@ const template = [
         }
       }
     ]
-  }
+  }*/
 ]
 
 const menu = Menu.buildFromTemplate(template)

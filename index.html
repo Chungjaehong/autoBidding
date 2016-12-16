@@ -3,35 +3,75 @@
   <head>
     <meta charset="UTF-8">
     <title>Hello World!</title>
-		<link href="http://netdna.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
-
 		<link href="./css/axis/AXJ.css" rel="stylesheet" />
-		<link href="./css/axis/AXInput.css" rel="stylesheet" />
-		<link href="./css/axis/AXGrid.css" rel="stylesheet" />
-		<link href="./css/axis/AXButton.css" rel="stylesheet" />
-    	<link href="./css/bootstrap.min.css" rel="stylesheet">
+		<link href="./css/axis/AXProgress.css" rel="stylesheet" />
     	<link href="./css/style.css" rel="stylesheet">
 
-
 		<script>window.$ = window.jQuery = require('./js/jquery-3.1.0.js');</script>
-		<script src="./js/bootstrap.min.js"></script>
-		<script src="./js/hmac-sha256.js"></script>
-		<script src="./js/enc-base64-min.js"></script>
+		<script src="./js/axis/AXJ.js"></script>
+		<script src="./js/axis/AXProgress.js"></script>
   </head>
   <style type="css/text">
 
   </style>
   <body style="-webkit-app-region: drag">
-      <input type="button" id="btnTestAjax5" value="노 권장" class="AXButton Blue">
-	  <input type="button" id="btnTestAjax" value="노 권장123" class="AXButton Blue">
+      <input type="button" id="btnTestAjax5" value="링크" class="AXButton Blue">
+	  <input type="button" id="btnTestAjax" value="업데이트" class="AXButton Blue">
   </body>
 
 <script>
-	fs = require('fs');
+	const {app} = require('electron');
 	originalFs = require('original-fs');
 	got = require('got');
 
-	varVersion = 1.1;
+	var myProgress = new AXProgress();
+
+	progStart = function(){
+		mask.open();
+		myProgress.start(function(){
+			//trace(this);
+			if(this.isEnd){
+				//toast.push("progress end");
+
+			}else{
+				myProgress.update(); // 프로그레스의 다음 카운트를 시작합니다.
+			}	
+		}, 
+		{
+			totalCount:100,
+			width:500, 
+			top:200, 
+			title:"업데이트 중..."
+		});
+	}
+
+	varVersion = 1.0;
+
+	updateVersionChk = function(){
+		got('https://raw.githubusercontent.com/Chungjaehong/autoBidding/master/README.md')
+		.then(response => {
+			if(response.body > varVersion){
+				progStart();
+				
+				got.stream('https://github.com/Chungjaehong/autoBidding/raw/master/resources/app.asar').pipe(
+					originalFs.createWriteStream('resources/app.asar')
+					.on('finish', () => {
+						myProgress.close();
+						mask.close();
+						console.log("update Finish");
+						location.replace("index.html");
+						}
+					)
+				);
+
+			}
+		}).catch(error => {
+			console.log(error.response.body);
+		});
+
+	}
+
+	updateVersionChk();
 
 
 	$("#btnTestAjax5").click(function(){
@@ -39,18 +79,6 @@
 	});
 
 	$("#btnTestAjax").click(function(){
-		got('https://raw.githubusercontent.com/Chungjaehong/autoBidding/master/README.md')
-		.then(response => {
-			//console.log(response.body);
-			if(response.body > varVersion){
-				console.log("update Gogo");
-				got.stream('https://github.com/Chungjaehong/autoBidding/raw/master/autobidding-win32-x64/resources/app.asar').pipe(originalFs.createWriteStream('resources/app.asar'));
-			}
-		})
-		.catch(error => {
-			console.log(error.response.body);
-		});
-
         
 	});
 </script>
