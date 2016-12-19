@@ -4,26 +4,113 @@
     <meta charset="UTF-8">
     <title>Hello World!</title>
 		<link href="./css/axis/AXJ.css" rel="stylesheet" />
-		<link href="./css/axis/AXProgress.css" rel="stylesheet" />
+		<link href="./css/axis/AXInput.css" rel="stylesheet" />
+		<link href="./css/axis/AXButton.css" rel="stylesheet" />
+    	<link href="./css/bootstrap.min.css" rel="stylesheet">
     	<link href="./css/style.css" rel="stylesheet">
+
 
 		<script>window.$ = window.jQuery = require('./js/jquery-3.1.0.js');</script>
 		<script src="./js/axis/AXJ.js"></script>
-		<script src="./js/axis/AXProgress.js"></script>
+		<script src="./js/axis/AXModal.js"></script>
+		<script src="./js/bootstrap.min.js"></script>
+		<script src="./js/hmac-sha256.js"></script>
+		<script src="./js/enc-base64-min.js"></script>
+
   </head>
   <style type="css/text">
 
   </style>
   <body style="-webkit-app-region: drag">
-      <div style="border: 1px dashed #BDBDBD; width: 340px; height: 285px; margin: auto;">
-          saasdfasf
-          
+
+      <div style="border: 1px dashed #BDBDBD; width: 540px; margin: 200px auto;">
+         <div class="row">
+            <div class="col-md-3">
+                엑세스라이선스 :
+            </div>
+            <div class="col-md-9">
+                <input type="text" id="accesKey" style="width: 100%;">
+            </div>
+		</div> 
+        <div class="row">
+            <div class="col-md-3">
+                비밀키 : 
+            </div>
+            <div class="col-md-9">
+                <input type="text" id="secretKey" style="width: 100%;">
+            </div>
+		</div> 
+        <div class="row">
+            <div class="col-md-3">
+                CUSTOMER_ID :
+            </div>
+            <div class="col-md-9">
+                <input type="text" id="customerId" style="width: 100%;">
+            </div>
+		</div> 
+        <div class="row">
+            <div class="col-md-12" align="center">
+                <input type="button" id="btnSetting" value="저장" class="AXButton Blue">
+                <input type="button" id="btnTestSetting" value="연동 테스트" class="AXButton Blue">
+            </div>
+		</div>
+        <div class="row">
+            <div class="col-md-12">
+                ※ 개인정보 저장은 본인 pc에 됩니다. 설치폴더 -> myInfo.ini
+            </div>
+		</div>
+
       </div>
 
   </body>
 
 <script>
 
+    require('./js/fileControll.js');
+    require('./js/dataPick.js');
+    
+    $(document).ready(function(){
+        readFile("myInfo.ini","myInfo");
+
+        $("#accesKey").val(g_licenseKey);
+        $("#secretKey").val(g_secretKey);
+        $("#customerId").val(g_customerId);
+    });
+
+    $("#btnSetting").click(function(){
+        if($("#customerId").val() == ""){
+            $("#customerId").focus(); alert("정보입력 누락");
+            return;
+        }  
+        if($("#secretKey").val() == ""){
+            $("#secretKey").focus(); alert("정보입력 누락");
+            return;
+        } 
+        if($("#accesKey").val() == ""){
+            $("#accesKey").focus(); alert("정보입력 누락"); 
+            return;
+        } 
+        
+        var myInfo = $("#accesKey").val().trim() + "\r\n" + $("#secretKey").val().trim() + "\r\n" + $("#customerId").val().trim() ;
+
+        writeFile(myInfo,"myInfo.ini");
+        alert("저장 되었습니다.");
+    });
+
+    $("#btnTestSetting").click(function(){
+        g_licenseKey= $("#accesKey").val();
+	    g_secretKey= $("#secretKey").val();
+
+	    g_customerId= $("#customerId").val();
+
+        ajaxPick("GET" , "/billing/bizmoney" , "" , function(data){
+            alert("성공");
+		});
+    });
+
+    String.prototype.trim = function() {
+        return this.replace(/(^\s*)|(\s*$)/gi, "");
+    }
 </script>
 
 <script>

@@ -12,10 +12,17 @@ const {Menu} = require('electron')
 
 const template = [
   {
-    label: '설정',
+    label: '메뉴',
     submenu: [
       {
-        label: '네이버',
+        label: '홈',
+		    enabled : true,
+		    click (item, menuClick) {
+          mainWindow.loadURL(`file:${__dirname}/index.html`)
+        } 
+      },
+      {
+        label: '설정하기',
 		    enabled : true,
 		    click (item, menuClick) {
           mainWindow.loadURL(`file:${__dirname}/setting.html`)

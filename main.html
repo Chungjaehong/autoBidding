@@ -191,11 +191,14 @@
 	});
 
 
+	biddingStartflag = 0;
 	$("#btnBiddingStart").click(function(){ //입찰 시작 버튼
 		$("#btnBiddingStart").hide();
 		$("#btnBiddingStop").show();
 		$("#loadingImg").show();
-
+		
+		biddingStartflag = 1;
+		
 		progressFunction(100,"입찰 시작");
 
 		groupGridIndex = 0;
@@ -215,12 +218,21 @@
 		$("#btnBiddingStart").show();
 		$("#btnBiddingStop").hide();
 		$("#loadingImg").hide();
+
+		biddingStartflag = 0;
+
 		clearInterval(timerId);
 
 		progressFunction(0,"입찰 중지");
 	});
 	
 	$("#btnSetting").click(function(){ // 설정 버튼
+		if( biddingStartflag >0 ){
+			alert("입찰 중지 후 설정 하시기바랍니다.");
+			return;
+		}
+
+
 		var myModal = new AXModal();
 		myModal.openDiv({
 				modalID:"modalDiv01",
