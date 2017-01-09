@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta charset="UTF-8">
-    <title>Hello World!</title>
+    <title>사업의 첫걸음 - 링크업</title>
 		<link href="./css/axis/AXJ.css" rel="stylesheet" />
 		<link href="./css/axis/AXInput.css" rel="stylesheet" />
 		<link href="./css/axis/AXButton.css" rel="stylesheet" />
@@ -20,8 +20,8 @@
 
   </style>
   <body style="back">
-      <input type="button" id="btnTestAjax5" value="링크" class="AXButton Blue">
-	  <input type="button" id="btnTestAjax" value="업데이트" class="AXButton Blue">
+  <!--    <input type="button" id="btnTestAjax5" value="링크" class="AXButton Blue">
+	  <input type="button" id="btnTestAjax" value="업데이트" class="AXButton Blue"> -->
 	  
 	  <div style="border: 1px dashed #BDBDBD; width: 540px; margin: 200px auto;">
 		  </br>
@@ -38,7 +38,7 @@
                 패스워드 : 
             </div>
             <div class="col-md-9">
-                <input type="text" id="loginPw" style="width: 250px;">
+                <input type="password" id="loginPw" name="loginPw"style="width: 250px;">
             </div>
 		</div> 
         <div class="row">
@@ -48,7 +48,7 @@
 		</div>
         <div class="row">
             <div class="col-md-12" align="center">
-                회원이 아니신가요 ? <a href="http://www.google.com" target="_blank"> 회원가입 바로가기.</a> 
+                회원이 아니신가요 ? <a href="http://autobidding.rf.gd/bbs/register.php" target="_blank"> 회원가입 바로가기.</a> 
             </div>
 		</div>
 
@@ -88,6 +88,9 @@
 	updateVersionChk = function(){
 		got('https://raw.githubusercontent.com/Chungjaehong/autoBidding/master/README.md')
 		.then(response => {
+			console.log("web Version>>"+response.body);
+			console.log("app Version>>"+response.body);
+
 			if(response.body > varVersion){
 				progStart();
 				
@@ -111,14 +114,44 @@
 
 	updateVersionChk();
 
-
-	$("#btnTestAjax5").click(function(){
-		location.replace("main.html");
+	$("#btnLogin").click(function(){
+		loginChk();
 	});
 
-	$("#btnTestAjax").click(function(){
-        
-	});
+	loginChk = function(){
+		var id = $("#loginId").val();
+		var pwd = $("#loginPw").val();
+
+		sendData = {"mb_id" : id, "mb_pwd" : pwd };
+
+		$.ajax({
+			type: "POST",
+			data : sendData,
+			dataType: 'json',
+			url : "http://localhost/autobidding/authCheck.php",
+			async: false,
+			success: function(data){
+				if(data.flag =="S"){
+					location.replace("main.html");
+				}else{
+					alert(data.message);
+				}
+			},
+			error:function(XMLHttpRequest, textStatus, errorThrows){ // erreur durant la requete
+      			alert("ERROR >>");
+      		}
+		});
+	}
+
+	$("input[name=loginPw]").keydown(function (key) {
+ 
+        if(key.keyCode == 13){//키가 13이면 실행 (엔터는 13)
+            loginChk();
+        }
+ 
+    });
+
+
 </script>
 
 <script>
