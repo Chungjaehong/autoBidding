@@ -1,5 +1,4 @@
 (function(){
-
 	g_licenseKey= "";//라이선스키
 	g_secretKey= "";//비밀키
 

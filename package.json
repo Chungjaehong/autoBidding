@@ -5,7 +5,7 @@
   "main": "main.js",
   "scripts": {
     "start": "electron .",
-    "build ": "electron-packager . autobidding --ignore='node_modules' --platform=win32 --arch=x64",
+    "build ": "electron-packager . LinkUP --ignore='node_modules' --platform=win32 --arch=x64",
     "package": "asar pack ./autobidding-win32-x64/resources/app/ ./autobidding-win32-x64/resources/app.asar &&rd ./autobidding-win32-x64/resources/app /S /Q"
   },
   "dependencies": {

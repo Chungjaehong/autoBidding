@@ -22,39 +22,7 @@
   <body style="back">
   <!--    <input type="button" id="btnTestAjax5" value="링크" class="AXButton Blue">
 	  <input type="button" id="btnTestAjax" value="업데이트" class="AXButton Blue"> -->
-	  
-	  <div style="border: 1px dashed #BDBDBD; width: 540px; margin: 200px auto;">
-		  </br>
-         <div class="row">
-            <div class="col-md-3" align="right">
-                아이디 :
-            </div>
-            <div class="col-md-9">
-                <input type="text" id="loginId" style="width: 250px;">
-            </div>
-		</div> 
-        <div class="row">
-            <div class="col-md-3" align="right">
-                패스워드 : 
-            </div>
-            <div class="col-md-9">
-                <input type="password" id="loginPw" name="loginPw"style="width: 250px;">
-            </div>
-		</div> 
-        <div class="row">
-            <div class="col-md-12" align="center">
-                <input type="button" id="btnLogin" value="로그인" class="AXButton Blue">
-            </div>
-		</div>
-        <div class="row">
-            <div class="col-md-12" align="center">
-                회원이 아니신가요 ? <a href="http://autobidding.rf.gd/bbs/register.php" target="_blank"> 회원가입 바로가기.</a> 
-            </div>
-		</div>
-
-      </div>
-
-
+	  <iframe id="ifrView" src="http://autobidding.rf.gd/bbs/login.php" frameborder="0" width="1000" height="1000" scrolling="no" onload="urlMoveEvent(this.contentWindow.location.href);"></iframe>
 
   </body>
 
@@ -63,6 +31,11 @@
 	got = require('got');
 
 	var myProgress = new AXProgress();
+	var remote = require('electron').remote;     
+
+	if( remote.getGlobal('sharedObj').prop1 == 1){
+		location.replace("main.html");
+	}
 
 	progStart = function(){
 		mask.open();
@@ -85,11 +58,34 @@
 
 	varVersion = 1.0;
 
+	function urlMoveEvent(url){//iframe onload
+		console.log(url);
+
+		if(url == "http://autobidding.rf.gd/"){
+			$("#ifrView").hide();
+			$("#ifrView").attr("src","http://autobidding.rf.gd/authCheck.php");
+		}
+
+		if(url == "http://autobidding.rf.gd/authCheck.php"){
+			var mbData = $("#ifrView").contents().find('body')[0].innerText;
+			jsonMbData = JSON.parse(mbData);
+
+			if(jsonMbData.flag !="S"){
+				alert(jsonMbData.message);
+				return;
+			}else if(jsonMbData.flag =="S"){
+				loginFlagChange();
+				alert(jsonMbData.message);
+				location.replace("main.html");
+			}
+		}
+	}
+
 	updateVersionChk = function(){
 		got('https://raw.githubusercontent.com/Chungjaehong/autoBidding/master/README.md')
 		.then(response => {
 			console.log("web Version>>"+response.body);
-			console.log("app Version>>"+response.body);
+			console.log("app Version>>"+varVersion);
 
 			if(response.body > varVersion){
 				progStart();
@@ -114,43 +110,18 @@
 
 	updateVersionChk();
 
-	$("#btnLogin").click(function(){
-		loginChk();
-	});
-
-	loginChk = function(){
-		var id = $("#loginId").val();
-		var pwd = $("#loginPw").val();
-
-		sendData = {"mb_id" : id, "mb_pwd" : pwd };
-
-		$.ajax({
-			type: "POST",
-			data : sendData,
-			dataType: 'json',
-			url : "http://localhost/autobidding/authCheck.php",
-			async: false,
-			success: function(data){
-				if(data.flag =="S"){
-					location.replace("main.html");
-				}else{
-					alert(data.message);
-				}
-			},
-			error:function(XMLHttpRequest, textStatus, errorThrows){ // erreur durant la requete
-      			alert("ERROR >>");
-      		}
-		});
+	loginFlagChange = function(){
+		remote.getGlobal('sharedObj').prop1 = 1;     
+		var ipcRenderer = require('electron').ipcRenderer;
+		ipcRenderer.send('show-prop1');    
 	}
 
 	$("input[name=loginPw]").keydown(function (key) {
- 
         if(key.keyCode == 13){//키가 13이면 실행 (엔터는 13)
             loginChk();
         }
- 
     });
-
+	
 
 </script>
 

@@ -3,6 +3,14 @@ const electron = require('electron')
 const app = electron.app
 // Module to create native browser window.
 const BrowserWindow = electron.BrowserWindow
+const ipcMain = require('electron').ipcMain;
+
+global.sharedObj = {prop1: 0};
+
+ipcMain.on('show-prop1', function(event) {
+  console.log(global.sharedObj.prop1);
+});
+
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
