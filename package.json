@@ -6,7 +6,7 @@
   "scripts": {
     "start": "electron .",
     "build ": "electron-packager . LinkUP --ignore='node_modules' --platform=win32 --arch=x64",
-    "package": "asar pack ./autobidding-win32-x64/resources/app/ ./autobidding-win32-x64/resources/app.asar &&rd ./autobidding-win32-x64/resources/app /S /Q"
+    "package": "asar pack ./LinkUP-win32-x64/resources/app/ ./LinkUP-win32-x64/resources/app.asar &&rd ./LinkUP-win32-x64/resources/app /S /Q"
   },
   "dependencies": {
     "electron": "^1.4.12",
