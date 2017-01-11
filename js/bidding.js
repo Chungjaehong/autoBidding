@@ -4,6 +4,7 @@
 		if(keyArData[groupGridIndex][index].nowRank == keyArData[groupGridIndex][index].wantRank ){//목표순위 일때
 			return;
 		}
+		// 현재 순위 / 원하는 순위
 		// 3 < 1 false
 		// 4 < 1 false
 		// 4 < 5 true
@@ -14,6 +15,8 @@
 			}
 			varBidAmt = keyArData[groupGridIndex][index].bidAmt - keyArData[groupGridIndex][index].biddingPay;
 			querString = "?fields=bidAmt";
+
+			keyArData[groupGridIndex][index].bidAmt = varBidAmt;
 
 			var sendData = {
 				bidAmt: keyArData[groupGridIndex][index].bidAmt,
@@ -26,6 +29,7 @@
 			});	
 			return;		
 		}
+		//현재순위 / 원하는 순위
 		// 3 > 1 true
 		// 2 > 1 true
 		if(keyArData[groupGridIndex][index].nowRank > keyArData[groupGridIndex][index].wantRank ){
@@ -33,10 +37,13 @@
 				return;
 			}
 			varBidAmt = keyArData[groupGridIndex][index].bidAmt + keyArData[groupGridIndex][index].biddingPay;
+			querString = "?fields=bidAmt";
 			
 			if(varBidAmt > keyArData[groupGridIndex][index].maxPay){//한도
 				varBidAmt = keyArData[groupGridIndex][index].maxPay;
 			}
+
+			keyArData[groupGridIndex][index].bidAmt = varBidAmt;
 
 			var sendData = {
 				bidAmt: keyArData[groupGridIndex][index].bidAmt,

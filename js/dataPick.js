@@ -198,8 +198,10 @@
 				groupGrid.setFocus(groupGridIndex);
 				keywordGrid.setList(keyArData[groupGridIndex], null, "reload");
 				
+				progressFunction(0,"네이버 적용 대기 중...");
+				
 				rankpickCallFlag = 0;
-				timerId = setInterval("rankPickCallFunction()", 5000);
+				timerId = setInterval("rankPickCallFunction()", 30000);
 				
 			}
 		}
