@@ -22,6 +22,10 @@
   <body style="back">
   <!--    <input type="button" id="btnTestAjax5" value="링크" class="AXButton Blue">
 	  <input type="button" id="btnTestAjax" value="업데이트" class="AXButton Blue"> -->
+	  <div>
+		  <font id="appVersion"> </font>
+	  </div>
+	  
 	  <iframe id="ifrView" src="http://autobidding.rf.gd/bbs/login.php" frameborder="0" width="1000" height="1000" scrolling="no" onload="urlMoveEvent(this.contentWindow.location.href);"></iframe>
 
   </body>
@@ -56,8 +60,10 @@
 		});
 	}
 
-	varVersion = 1.01;
-
+	varVersion = 1.02;
+	
+	$("#appVersion").text("APP Ver : "+varVersion);
+	
 	function urlMoveEvent(url){//iframe onload
 		console.log(url);
 
@@ -90,7 +96,7 @@
 			if(response.body > varVersion){
 				progStart();
 				
-				got.stream('https://github.com/Chungjaehong/autoBidding/raw/master/resources/app.asar').pipe(
+				got.stream('https://github.com/Chungjaehong/autoBidding/raw/master/LinkUP-win32-x64/resources/app.asar').pipe(
 					originalFs.createWriteStream('resources/app.asar')
 					.on('finish', () => {
 						myProgress.close();
