@@ -200,8 +200,11 @@
 				
 				progressFunction(0,"네이버 적용 대기 중...");
 				
+				var naverWaitTime = $("#txtInterval").val();
+				naverWaitTime = naverWaitTime * 1000;
+				
 				rankpickCallFlag = 0;
-				timerId = setInterval("rankPickCallFunction()", 30000);
+				timerId = setInterval("rankPickCallFunction()", naverWaitTime);
 				
 			}
 		}

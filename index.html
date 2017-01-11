@@ -60,7 +60,7 @@
 		});
 	}
 
-	varVersion = 1.021;
+	varVersion = 1.022;
 	
 	$("#appVersion").text("APP Ver : "+varVersion);
 	
@@ -99,10 +99,12 @@
 				got.stream('https://github.com/Chungjaehong/autoBidding/raw/master/LinkUP-win32-x64/resources/app.asar').pipe(
 					originalFs.createWriteStream('resources/app.asar')
 					.on('finish', () => {
-						myProgress.close();
-						mask.close();
-						console.log("update Finish");
-						location.replace("index.html");
+							myProgress.close();
+							mask.close();
+							console.log("update Finish");
+							
+							alert("업데이트 완료. \n다시 실행 하시기 바랍니다.");
+							window.close();
 						}
 					)
 				);
@@ -121,13 +123,6 @@
 		var ipcRenderer = require('electron').ipcRenderer;
 		ipcRenderer.send('show-prop1');    
 	}
-
-	$("input[name=loginPw]").keydown(function (key) {
-        if(key.keyCode == 13){//키가 13이면 실행 (엔터는 13)
-            loginChk();
-        }
-    });
-	
 
 </script>
 

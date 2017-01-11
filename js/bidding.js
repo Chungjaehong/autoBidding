@@ -4,6 +4,12 @@
 		if(keyArData[groupGridIndex][index].nowRank == keyArData[groupGridIndex][index].wantRank ){//목표순위 일때
 			return;
 		}
+
+
+		if(!chkZeroBidding){//0순위 입찰 사용 안함
+			return;
+		}
+
 		// 현재 순위 / 원하는 순위
 		// 3 < 1 false
 		// 4 < 1 false
@@ -15,6 +21,10 @@
 			}
 			varBidAmt = keyArData[groupGridIndex][index].bidAmt - keyArData[groupGridIndex][index].biddingPay;
 			querString = "?fields=bidAmt";
+			
+			if(varBidAmt < 70){
+				varBidAmt = 70;
+			}
 
 			keyArData[groupGridIndex][index].bidAmt = varBidAmt;
 
@@ -38,7 +48,7 @@
 			}
 			varBidAmt = keyArData[groupGridIndex][index].bidAmt + keyArData[groupGridIndex][index].biddingPay;
 			querString = "?fields=bidAmt";
-			
+
 			if(varBidAmt > keyArData[groupGridIndex][index].maxPay){//한도
 				varBidAmt = keyArData[groupGridIndex][index].maxPay;
 			}

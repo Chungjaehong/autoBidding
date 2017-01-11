@@ -15,6 +15,7 @@
 
 		<script>window.$ = window.jQuery = require('./js/jquery-3.1.0.js');</script>
 		<script src="./js/axis/AXJ.js"></script>
+		<script src="./js/axis/AXInput.js"></script>
 		<script src="./js/axis/AXGrid.js"></script>
 		<script src="./js/axis/AXModal.js"></script>
 		<script src="./js/bootstrap.min.js"></script>
@@ -35,6 +36,15 @@
 						<div class="col-md-6">
 							<!-- <input type="button" id="btnTestAjax2" value="ajaxTest2" class="AXButton Blue"> -->
 							<input type="button" id="btnUser" value="계정 동기화" class="AXButton Blue">
+							<div class="group">
+								<label>
+									<input type="checkbox" id="chkZeroBidding" name="chkZeroBidding" value="" checked="checked"/>
+									0순위 입찰
+								</label>
+								<i class="fa fa-search fa-lg" title="순위 밖일 경우에 입찰가를 올리는 기능입니다.&#013;※입찰 스케줄 이외의 시간에 비정상적으로 입찰가가 &#013; 높아 질 수있으니 운영중이 아닐때는 체크해제 하세요."></i>
+								&nbsp;&nbsp;| &nbsp;&nbsp; 네이버 입찰대기 시간 : <input type="text" id="txtInterval" value="30"> 초
+								<i class="fa fa-search fa-lg" title="한개 그룹의 입찰 종료 후 대기시간 설정 입니다.&#013;※너무 빠른 입찰은 네이버에 차단당할 수 있습니다.&#013; 키워드 수에 따라 30초~1분을 권장합니다."></i>
+							</div>
 						</div>
 						<div class="col-md-6 text-right">
 							<input type="button" id="btnGroup" value="그룹 동기화" class="AXButton Blue">
@@ -329,11 +339,12 @@
 		$('.progress-bar').css('width', val+'%').attr('aria-valuenow', val);
 		$("#progressInfo").text(textInfo);
 	}
-
-	$("#btnTestAjax2").click(function(){
-				
+	
+	//0순위 입찰 체크박스
+	chkZeroBidding = true;
+	$("#chkZeroBidding").on( "click", function(){
+		chkZeroBidding = $("#chkZeroBidding").prop("checked");
 	});
-
 </script>
 
 <script>
