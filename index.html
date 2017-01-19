@@ -26,7 +26,7 @@
 		  <font id="appVersion"> </font>
 	  </div>
 	  
-	  <iframe id="ifrView" src="http://autobidding.rf.gd/bbs/login.php" frameborder="0" width="1000" height="1000" scrolling="no" onload="urlMoveEvent(this.contentWindow.location.href);"></iframe>
+	  <iframe id="ifrView" src="http://keylinkup.com/bbs/login.php" frameborder="0" width="1000" height="1000" scrolling="no" onload="urlMoveEvent(this.contentWindow.location.href);"></iframe>
 
   </body>
 
@@ -60,19 +60,19 @@
 		});
 	}
 
-	varVersion = 1.023;
+	varVersion = 1.024;
 	
 	$("#appVersion").text("APP Ver : "+varVersion);
 	
 	function urlMoveEvent(url){//iframe onload
 		console.log(url);
 
-		if(url == "http://autobidding.rf.gd/"){
+		if(url == "http://keylinkup.com/"){
 			$("#ifrView").hide();
-			$("#ifrView").attr("src","http://autobidding.rf.gd/authCheck.php");
+			$("#ifrView").attr("src","http://keylinkup.com/authCheck.php");
 		}
 
-		if(url == "http://autobidding.rf.gd/authCheck.php"){
+		if(url == "http://keylinkup.com/authCheck.php"){
 			var mbData = $("#ifrView").contents().find('body')[0].innerText;
 			jsonMbData = JSON.parse(mbData);
 
