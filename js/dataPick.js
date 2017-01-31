@@ -12,6 +12,8 @@
 	groupGridIndex = 0;
 	keywordGridIndex = 0;
 
+	clickGridGroupIndex = 0;
+
 	//bidding.js
 	biddingFlag = 0;
 	rankPickFlag =0;

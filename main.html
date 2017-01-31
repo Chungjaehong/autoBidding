@@ -101,12 +101,12 @@
 								</tr>
 								<tr>
 									<td>
-										<input type="button" id="btnBiddingAllGroup" value="전체 그룹" class="AXButton Blue">
-										<input type="button" id="btnBiddingNowGroup" value="현재 그룹" class="AXButton Blue">
+										<input type="button" id="btnBiddingAllGroup" value="전체 그룹2" class="AXButton Blue">
+										<input type="button" id="btnBiddingNowGroup" value="현재 그룹2" class="AXButton Blue">
 									</td>
 									<td td style="padding:0 0 0 10px">
-										<input type="button" id="btnRankAllGroup" value="전체 그룹" class="AXButton green">
-										<input type="button" id="btnRankNowGroup" value="현재 그룹" class="AXButton green">
+										<input type="button" id="btnRankAllGroup" value="전체 그룹1" class="AXButton green">
+										<input type="button" id="btnRankNowGroup" value="현재 그룹1" class="AXButton green">
 									</td>
 								</tr>
 							</table>
@@ -255,24 +255,24 @@
 	//*********************셋팅 UI***************************** 
 	var biddingSettingFlag = "";
 	$("#btnBiddingNowGroup").click(function(){ //입찰가 변경 현재
-		biddingSettingFlag = "Now";
+		biddingSettingFlag = "Now";//입찰 현재
 		biddingSettingFunction("modalDiv02","modalBiding");
 	});
 
 	$("#btnBiddingAllGroup").click(function(){ //입찰가 변경 전체
-		biddingSettingFlag = "All";
+		biddingSettingFlag = "All";//입찰 전체
 		biddingSettingFunction("modalDiv02","modalBiding");
 
 	});
 
 	$("#btnRankNowGroup").click(function(){ //순위 셋팅 현재
-		biddingSettingFlag = "All_R";
+		biddingSettingFlag = "All_R";//순위 현재
 		biddingSettingFunction("modalDiv03","modalRank");
 
 	});
 	
 	$("#btnRankAllGroup").click(function(){ //순위 셋팅 전체
-		biddingSettingFlag = "Now_R";
+		biddingSettingFlag = "Now_R";//순위 전체
 		biddingSettingFunction("modalDiv03","modalRank");
 	});
 	
@@ -298,12 +298,12 @@
 	});
 
 	keywordSettingUpdateFunction = function(val){
-		if(biddingSettingFlag=="Now"){
-			for(var i=0; i < keyArData[groupGridIndex].length ; i++){
-				keyArData[groupGridIndex][i].maxPay = val; 
+		if(biddingSettingFlag=="Now"){//입찰 현재
+			for(var i=0; i < keyArData[clickGridGroupIndex].length ; i++){
+				keyArData[clickGridGroupIndex][i].maxPay = val; 
 			}
 		}
-		if(biddingSettingFlag=="All"){
+		if(biddingSettingFlag=="All"){//
 			for(var i=0; i < keyArData.length ; i++){
 				for(var j=0; j < keyArData[i].length ; j++){
 					keyArData[i][j].maxPay = val;
@@ -311,12 +311,12 @@
 			}
 		}
 
-		if(biddingSettingFlag=="Now_R"){
-			for(var i=0; i < keyArData[groupGridIndex].length ; i++){
-				keyArData[groupGridIndex][i].wantRank = val; 
+		if(biddingSettingFlag=="All_R"){
+			for(var i=0; i < keyArData[clickGridGroupIndex].length ; i++){
+				keyArData[clickGridGroupIndex][i].wantRank = val; 
 			}
 		}
-		if(biddingSettingFlag=="All_R"){
+		if(biddingSettingFlag=="Now_R"){
 			for(var i=0; i < keyArData.length ; i++){
 				for(var j=0; j < keyArData[i].length ; j++){
 					keyArData[i][j].wantRank = val;

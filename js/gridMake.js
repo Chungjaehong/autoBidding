@@ -73,6 +73,8 @@
 														//toast.push(Object.toJSON({"event": "click", "index": this.index, "r": this.r, "c": this.c, "item": this.item}));
 														// this.list, this.page
 														keywordGrid.setList(keyArData[this.index], null, "reload");
+														clickGridGroupIndex = this.index;
+
 												},
 												addClass: function () {
 														return (this.index % 2 == 0 ? "blue" : "blue"); // red, green, blue, yellow, white, gray
