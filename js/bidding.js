@@ -10,6 +10,35 @@
 			return;
 		}
 
+		//현재순위 / 원하는 순위
+		// 3 > 1 true
+		// 2 > 1 true
+		if(keyArData[groupGridIndex][index].nowRank > keyArData[groupGridIndex][index].wantRank || keyArData[groupGridIndex][index].nowRank == 0){
+			if(keyArData[groupGridIndex][index].status == "OFF"){
+				return;
+			}
+			varBidAmt = keyArData[groupGridIndex][index].bidAmt + keyArData[groupGridIndex][index].biddingPay;
+			querString = "?fields=bidAmt";
+
+			if(varBidAmt > keyArData[groupGridIndex][index].maxPay){//한도
+				varBidAmt = keyArData[groupGridIndex][index].maxPay;
+			}
+
+			keyArData[groupGridIndex][index].bidAmt = varBidAmt;
+
+			var sendData = {
+				bidAmt: keyArData[groupGridIndex][index].bidAmt,
+				useGroupBidAmt: keyArData[groupGridIndex][index].useGroupBidAmt,
+				nccAdgroupId:keyArData[groupGridIndex][index].nccAdgroupId
+			};
+
+			ajaxBidding("PUT" , "/ncc/keywords/"+keyArData[groupGridIndex][index].nccKeywordId , querString , sendData, function(data){
+				console.log("입찰 완료");
+			});	
+			return;		
+		}
+
+
 		// 현재 순위 / 원하는 순위
 		// 3 < 1 false
 		// 4 < 1 false
@@ -39,33 +68,7 @@
 			});	
 			return;		
 		}
-		//현재순위 / 원하는 순위
-		// 3 > 1 true
-		// 2 > 1 true
-		if(keyArData[groupGridIndex][index].nowRank > keyArData[groupGridIndex][index].wantRank ){
-			if(keyArData[groupGridIndex][index].status == "OFF"){
-				return;
-			}
-			varBidAmt = keyArData[groupGridIndex][index].bidAmt + keyArData[groupGridIndex][index].biddingPay;
-			querString = "?fields=bidAmt";
 
-			if(varBidAmt > keyArData[groupGridIndex][index].maxPay){//한도
-				varBidAmt = keyArData[groupGridIndex][index].maxPay;
-			}
-
-			keyArData[groupGridIndex][index].bidAmt = varBidAmt;
-
-			var sendData = {
-				bidAmt: keyArData[groupGridIndex][index].bidAmt,
-				useGroupBidAmt: keyArData[groupGridIndex][index].useGroupBidAmt,
-				nccAdgroupId:keyArData[groupGridIndex][index].nccAdgroupId
-			};
-
-			ajaxBidding("PUT" , "/ncc/keywords/"+keyArData[groupGridIndex][index].nccKeywordId , querString , sendData, function(data){
-				console.log("입찰 완료");
-			});	
-			return;		
-		}
 
 	}
 
