@@ -107,7 +107,7 @@
 
 				for(var i=0; i < campArData.length ; i++){
 					//---------------그룹 정보---------------
-					ajaxPick("GET" , "/ncc/adgroups" , "?nccCampaignId=" + campArData[i].nccCampaignId + "&recordSize=1000" , function(data){
+					ajaxPick("GET" , "/ncc/adgroups" , "?nccCampaignId=" + campArData[i].nccCampaignId , function(data){
 						for(var i=0; i < data.length ; i++){
 							grpArData.push(data[i]);
 						}
@@ -137,7 +137,7 @@
 			ajaxPick("GET" , "/ncc/keywords" , "?nccAdgroupId=" + chkVar[i].nccAdgroupId + "&recordSize=1000" , function(data){
 				chkVar[i].keyCout = data.length;
 				for(var j=0; j < data.length ; j++){
-					data[j].NudeKeyword = data[j].managedKeyword.pCPLMaxDepth;
+					//data[j].NudeKeyword = data[j].managedKeyword.pCPLMaxDepth;
 					data[j].nowRank = 0;
 					data[j].maxPay = 10000;
 					data[j].biddingPay = 100;

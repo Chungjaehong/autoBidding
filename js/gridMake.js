@@ -101,7 +101,7 @@
 												{key: "keyword", label: "키워드", width: "150"},
 												{key: "status", label: "상태", width: "100"},
 												{key: "bidAmt", label: "입찰가", width: "100" ,formatter:"money"},
-												{key: "NudeKeyword", label: "업체수", width: "80"},
+												//{key: "NudeKeyword", label: "업체수", width: "80"},
 												{key: "nowRank", label: "현재순위", width: "80",align:"right"},
 												{key: "maxPay", label: "입찰 한도", width: "*",align:"right",
 													formatter: "money",

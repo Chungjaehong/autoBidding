@@ -34,7 +34,7 @@
 				<div class="col-md-12">
 					<div class="row">
 						<div class="col-md-6">
-							<!-- <input type="button" id="btnTestAjax2" value="ajaxTest2" class="AXButton Blue"> -->
+							<!--<input type="button" id="btnTestAjax2" value="ajaxTest2" class="AXButton Blue">-->
 							<input type="button" id="btnUser" value="계정 동기화" class="AXButton Blue">
 							<div class="group">
 								<label>
@@ -345,6 +345,24 @@
 	$("#chkZeroBidding").on( "click", function(){
 		chkZeroBidding = $("#chkZeroBidding").prop("checked");
 	});
+
+	$("#btnTestAjax2").click(function(event) {
+			$.ajax({
+			type: "GET",
+			dataType: 'html',
+			url : "http://m.ad.search.naver.com/search.naver?where=m_expd&ie=utf8&query=%EC%95%A0%EA%B8%B0%EC%98%B7",
+			async: false,
+			beforeSend: function(xhr, settings){
+			},
+			success: function(data){
+				console.log(data);
+
+			},
+			error:function(XMLHttpRequest, textStatus, errorThrows){ // erreur durant la requete
+      			alert("ERROR >>");
+      		}
+		});
+	});	
 </script>
 
 <script>
