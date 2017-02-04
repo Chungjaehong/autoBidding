@@ -29,9 +29,12 @@
             
             if(actionName == "myInfo"){
                 var txtData = data.split(/\r\n/g);
-                g_licenseKey=txtData[0].replace(/(^\s*)|(\s*$)/gi, "");
+                /*g_licenseKey=txtData[0].replace(/(^\s*)|(\s*$)/gi, "");
 	            g_secretKey= txtData[1].replace(/(^\s*)|(\s*$)/gi, "");
-	            g_customerId= txtData[2].replace(/(^\s*)|(\s*$)/gi, "");
+	            g_customerId= txtData[2].replace(/(^\s*)|(\s*$)/gi, "");*/
+                g_licenseKey=txtData[0];
+	            g_secretKey= txtData[1];
+	            g_customerId= txtData[2];
                 //campArData = JSON.parse(data)
                 //usergrid.setList(JSON.parse(data), null, "reload");
             }

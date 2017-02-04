@@ -25,6 +25,7 @@
   <style type="css/text">
   </style>
   <body>
+	<iframe id="ifrView" src="" frameborder="0" width="1000" height="1000" scrolling="no" onload="urlMoveEvent(this.contentWindow.location.href);"></iframe>
 		<div class="container-fluid">
 			<div class="row">
 				<div class="col-md-12">
@@ -34,7 +35,7 @@
 				<div class="col-md-12">
 					<div class="row">
 						<div class="col-md-6">
-							<!--<input type="button" id="btnTestAjax2" value="ajaxTest2" class="AXButton Blue">-->
+							<input type="button" id="btnTestAjax2" value="ajaxTest2" class="AXButton Blue">
 							<input type="button" id="btnUser" value="계정 동기화" class="AXButton Blue">
 							<div class="group">
 								<label>
@@ -159,7 +160,9 @@
 	$(document).ready(function(){
 		readFile("myInfo.ini","myInfo");
 		fnObj.usergrid.bind();
-		$("#ifrView").attr("src","");
+		
+		$("#ifrView").hide();
+
 		readFile("usergrid.json","usergrid");
 	});
 
@@ -216,8 +219,14 @@
 
 		groupGrid.setFocus(groupGridIndex);
 
-		chkKeyWord =keywordGrid.getCheckedList(0);
+		chkKeyWord = keywordGrid.getCheckedList(0);
 		chkKeyWordIndex = keywordGrid.getCheckedListWithIndex(0);
+		
+		//모바일 기능추가
+		chkMobile = groupGrid.getCheckedListWithIndex(3);//모바일 체크
+		for(var i=0; i < chkMobile.length ; i++){
+			keyArData[chkMobile[i].index].mobile = true;
+		}
 
 		rankpickCallFlag = 0;
 		timerId = setInterval("rankPickCallFunction()", 5000); 
@@ -346,23 +355,19 @@
 		chkZeroBidding = $("#chkZeroBidding").prop("checked");
 	});
 
-	$("#btnTestAjax2").click(function(event) {
-			$.ajax({
-			type: "GET",
-			dataType: 'html',
-			url : "http://m.ad.search.naver.com/search.naver?where=m_expd&ie=utf8&query=%EC%95%A0%EA%B8%B0%EC%98%B7",
-			async: false,
-			beforeSend: function(xhr, settings){
-			},
-			success: function(data){
-				console.log(data);
+	function urlMoveEvent(url){//iframe onload
+		if(url == mobileRankUrl){
+			intervalMobileRank = setInterval("mobileRank()", 2000);
+		}
+	}
 
-			},
-			error:function(XMLHttpRequest, textStatus, errorThrows){ // erreur durant la requete
-      			alert("ERROR >>");
-      		}
-		});
+	$("#btnTestAjax2").click(function(event) {
+		mobileRankUrl = encodeURI("http://m.ad.search.naver.com/search.naver?where=m_expd&ie=utf8&query=애기옷");
+		$("#ifrView").attr("src",mobileRankUrl);
 	});	
+
+
+
 </script>
 
 <script>

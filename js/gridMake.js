@@ -56,7 +56,7 @@
 												{key: "name", label: "그룹명", width: "*"},
 												{key: "status", label: "상태", width: "200"},
 												{key: "keyCout", label: "키워드수", width: "*"},
-												{key: "biddingDtm", label: "입찰 시간", width: "*"},
+												{key: "mobile",width: "*", label: "모바일", align: "center", formatterLabel:"모바일",formatter: "checkbox"}
 										];
 								};
 								groupGrid.setConfig({
