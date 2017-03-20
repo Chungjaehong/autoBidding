@@ -101,8 +101,16 @@
 		progressFunction(30,"계정 동기화");
 		//-------------------캠페인 정보---------------
 		ajaxPick("GET" , "/ncc/campaigns" , "" , function(data){
+			campArData = new Array();
+
 			if(data.length > 0){
-				campArData = data;
+				for (var i = 0; i < data.length; i++) {
+					if(data[i].campaignTp != "SHOPPING"){
+						campArData.push(data[i]);
+					}
+
+				}
+				//campArData = data;
 				grpArData = new Array();//캠페인 안에 그룹   --> 계정정보
 
 				for(var i=0; i < campArData.length ; i++){
@@ -180,26 +188,9 @@
 		
 		chkKeyWordIndex = keywordGrid.getCheckedListWithIndex(0);
 		if(chkKeyWordIndex.length > rankpickCallFlag){
-
-			keyArDataIndex = keyArData[groupGridIndex][chkKeyWordIndex[rankpickCallFlag].index];
-			
-			//모바일 기능 추가
-			if(keyArData[groupGridIndex].mobile){
-				clearInterval(timerId);//순위 체크할때까지 끄기
-
-				mobileKey = chkVar[groupGridIndex].mobileChannelKey;
-				//mobileKey = "http://www.sokgisa.org"; //test
-				mobileKeywordIndex = chkKeyWordIndex[rankpickCallFlag].index;
-				mobileKeyword = keyArDataIndex.keyword;
-
-				mobileRankUrl = encodeURI("http://m.ad.search.naver.com/search.naver?where=m_expd&ie=utf8&query="+mobileKeyword);
-				$("#ifrView").attr("src",mobileRankUrl);
-
-			}else{
-				rankPickFunction(keyArDataIndex.keyword,encodeURI(keyArDataIndex.keyword) , chkVar[groupGridIndex].pcChannelKey, chkKeyWordIndex[rankpickCallFlag].index); //Product
-			}
-
+			keyArDataIndex =keyArData[groupGridIndex][chkKeyWordIndex[rankpickCallFlag].index];
 			//rankPickFunction(encodeURI(keyArDataIndex.keyword) , "www.dainsg.com", chkKeyWordIndex[rankpickCallFlag].index); //Test
+			rankPickFunction(keyArDataIndex.keyword,encodeURI(keyArDataIndex.keyword) , chkVar[groupGridIndex].pcChannelKey, chkKeyWordIndex[rankpickCallFlag].index); //Product
 			
 			rankpickCallFlag++;
 		}else{
@@ -263,27 +254,7 @@
 		});
 	}
 
-	mobileRank = function(){
-		var rankList = $("#ifrView").contents().find('#contentsList div.lst_cont div.url_area a');
 
-		if(rankList.length > 0){
-			clearInterval(intervalMobileRank);
-			
-			for(var i=0; i < rankList.length ; i++){
-				if(rankList[i].text == mobileKey){
-					keyArData[groupGridIndex][mobileKeywordIndex].nowRank = i+1;
-				}
-			}
-			
-			biddingFunction(groupGridIndex,mobileKeywordIndex);
-
-			progressFunction(100,"["+mobileKeyword+"] 입찰 중...");
-			
-			keywordGrid.setList(keyArData[groupGridIndex], null, "reload");
-			keywordGrid.setFocus(mobileKeywordIndex);
-
-			timerId = setInterval("rankPickCallFunction()", 5000);
-		}
-	}
+	
 
 }());
