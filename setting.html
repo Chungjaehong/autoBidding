@@ -70,11 +70,13 @@
     require('./js/dataPick.js');
     
     $(document).ready(function(){
-        readFile("myInfo.ini","myInfo");
+        readFile("myInfo.ini","myInfo",function(){
+            $("#accesKey").val(g_licenseKey);
+            $("#secretKey").val(g_secretKey);
+            $("#customerId").val(g_customerId);
 
-        $("#accesKey").val(g_licenseKey);
-        $("#secretKey").val(g_secretKey);
-        $("#customerId").val(g_customerId);
+        });
+
     });
 
     $("#btnSetting").click(function(){

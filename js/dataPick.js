@@ -129,6 +129,9 @@
 	});
 
 	$("#btnGroup").click(function(){//그룹 동기화 버튼
+		//유저정보
+		usrSecret();
+
 		//그룹동기화
 		progressFunction(10,"그룹 동기화");
 

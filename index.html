@@ -14,20 +14,45 @@
 		<script>window.$ = window.jQuery = require('./js/jquery-3.1.0.js');</script>
 		<script src="./js/axis/AXJ.js"></script>
 		<script src="./js/bootstrap.min.js"></script>
+		<script src="./js/axis/AXModal.js"></script>
 		<script src="./js/axis/AXProgress.js"></script>
   </head>
   <style type="css/text">
 
   </style>
-  <body style="back">
+  <body>
   <!--    <input type="button" id="btnTestAjax5" value="링크" class="AXButton Blue">
 	  <input type="button" id="btnTestAjax" value="업데이트" class="AXButton Blue"> -->
 	  <div>
 		  <font id="appVersion"> </font>
 	  </div>
-	  
-	  <iframe id="ifrView" src="http://keylinkup.com/bbs/login.php" frameborder="0" width="1000" height="1000" scrolling="no" onload="urlMoveEvent(this.contentWindow.location.href);"></iframe>
-
+	<div style="display:none;">
+		<div id="modalContent" style="padding:20px;">
+			<h3>LinkUP - Keyword</h3>
+			<table>
+				<tr>
+					<td> 아이디 </td>
+					<td style="padding:0 0 0 10px"><input type="text" id="usrId" name="usrId"> </td>
+				</tr>
+				<tr>
+					<td> 패스워드 </td>
+					<td style="padding:0 0 0 10px"><input type="password" id="usrPwd" name="usrPwd"> </td>
+				</tr>
+				<tr>
+					<td>  </td>
+					<td style="padding:0 0 0 10px"> </td>
+				</tr>
+				
+				<tr align="center">
+					<td align = "center" colspan="2">
+						</br>
+						<input type="button" id="btnLogin" value="로그인" class="AXButton Blue">
+						<input type="button" id="btnAddUser" value="회원가입" class="AXButton Green">
+					</td>
+				</tr>
+			</table>
+		</div>
+	</div>
   </body>
 
 <script>
@@ -60,33 +85,10 @@
 		});
 	}
 
-	varVersion = 1.027;
+	varVersion = 1.025;
 	
 	$("#appVersion").text("APP Ver : "+varVersion);
 	
-	function urlMoveEvent(url){//iframe onload
-		console.log(url);
-
-		if(url == "http://keylinkup.com/"){
-			$("#ifrView").hide();
-			$("#ifrView").attr("src","http://keylinkup.com/authCheck.php");
-		}
-
-		if(url == "http://keylinkup.com/authCheck.php"){
-			var mbData = $("#ifrView").contents().find('body')[0].innerText;
-			jsonMbData = JSON.parse(mbData);
-
-			if(jsonMbData.flag !="S"){
-				alert(jsonMbData.message);
-				return;
-			}else if(jsonMbData.flag =="S"){
-				loginFlagChange();
-				alert(jsonMbData.message);
-				location.replace("main.html");
-			}
-		}
-	}
-
 	updateVersionChk = function(){
 		got('https://raw.githubusercontent.com/Chungjaehong/autoBidding/master/README.md')
 		.then(response => {
@@ -118,10 +120,75 @@
 
 	updateVersionChk();
 
-	loginFlagChange = function(){
-		remote.getGlobal('sharedObj').prop1 = 1;     
+	$(document).ready(function(){
+		var myModal = new AXModal();
+		myModal.openDiv({
+				modalID:"modalDiv01",
+				targetID:"modalContent",
+				width:250,
+				top:250
+		});
+
+		$("input[name=usrPwd], input[name=usrId]").keydown(function (key) {
+			if(key.keyCode == 13){
+				var sendData = {
+						usrPwd : $("#usrPwd").val(), 
+						usrId : $("#usrId").val()
+				};
+				loginChk(sendData);
+			}
+		});
+
+		$("#btnLogin").click(function(){
+			var sendData = {
+					usrPwd : $("#usrPwd").val(), 
+					usrId : $("#usrId").val()
+			};
+			loginChk(sendData);
+		});
+
+		function loginChk(param){
+
+			$.ajax({
+				type: "GET",
+				dataType: 'json',
+				url : "http://keylinkup.com/loginChk.php?mb_id="+ param.usrId +"&mb_password="+param.usrPwd,
+				async: false,
+				beforeSend: function(xhr, settings){
+				},
+				success: function(data){
+					if(data.result=="S"){
+						loginFlagChange(data.mb_id, data.mb_1, data.mb_2);
+						location.replace("main.html");
+						
+					}else{
+						alert(data.message);
+					}
+				},
+				error:function(XMLHttpRequest, textStatus, errorThrows){ // erreur durant la requete
+				}
+			});
+		}
+
+	});
+	loginFlagChange = function(usrId,usrDtm,usrType){
+		remote.getGlobal('sharedObj').prop1 = 1;
+		remote.getGlobal('sharedObj').usrId = usrId;
+		remote.getGlobal('sharedObj').usrDtm = usrDtm;
+		remote.getGlobal('sharedObj').usrType = usrType;
+
 		var ipcRenderer = require('electron').ipcRenderer;
 		ipcRenderer.send('show-prop1');    
+	}
+	
+	$("#btnAddUser").click(function(){
+		popupFunction("http://keylinkup.com/bbs/register.php");
+	});
+
+	popupFunction = function(url){
+		var popUrl = url;	//팝업창에 출력될 페이지 URL
+		var popOption = "width=870, height=760, status=no;";    //팝업창 옵션(optoin)
+		window.open(popUrl,"",popOption);
 	}
 
 </script>

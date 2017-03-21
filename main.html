@@ -157,13 +157,24 @@
 	require('./js/fileControll.js');
 	require('./js/bidding.js');
 
-	$(document).ready(function(){
-		readFile("myInfo.ini","myInfo");
-		fnObj.usergrid.bind();
-		
-		$("#ifrView").hide();
+	var remote = require('electron').remote;     
+	
+	usrId = remote.getGlobal('sharedObj').usrId;
+	usrDtm = remote.getGlobal('sharedObj').usrDtm;
+	usrType = remote.getGlobal('sharedObj').usrType;
 
-		readFile("usergrid.json","usergrid");
+ 	$(document).ready(function(){
+		popupFunction("http://keylinkup.com/");
+
+		intervalAuthChk = setInterval("authChk()", "600000");
+
+		readFile("myInfo.ini","myInfo",function(){
+			fnObj.usergrid.bind();
+			$("#ifrView").hide();
+
+			readFile("usergrid.json","usergrid",function(){});
+		});
+		
 	});
 
 	$(".nav-tabs a").click(function(event) {
@@ -200,7 +211,7 @@
 		fnObj.usergrid.bind();
 		$("#userDataGrid_AX_checkAll_AX_0_AX_2").hide();
 		
-		readFile("usergrid.json","usergrid");
+		readFile("usergrid.json","usergrid",function(){});
 	});
 
 
@@ -366,7 +377,82 @@
 		$("#ifrView").attr("src",mobileRankUrl);
 	});	
 
+	authChk = function(){
+		var usDtm=usrDtm.replace(/-/gi,"");
 
+		$.ajax({
+			type: "GET",
+			dataType: 'json',
+			url : "http://keylinkup.com/autobidding/timeChk.php?usDtm="+usDtm,
+			//url : "http://localhost/autobidding/timeChk.php?usrDtm=20170318",
+			async: false,
+			beforeSend: function(xhr, settings){
+			},
+			success: function(data){
+				if(data.result != "S"){
+					alert("사용기간 만료 되었습니다. \n재구매 부탁드립니다.\n항상 발전하는 링크업이 되도록 하겠습니다.");
+					window.close();
+				}
+			},
+			error:function(XMLHttpRequest, textStatus, errorThrows){ // erreur durant la requete
+      		}
+		});
+	}
+
+	usrSecret = function(){
+		ajaxPick("GET" , "/ncc/campaigns" , "" , function(data){
+			var strCamp = "";
+			var usrSecretData={};
+			for (var i = 0; i < data.length; i++) {
+				if(i == 0){
+					strCamp = strCamp + data[i].nccCampaignId;
+				}else{
+					strCamp = strCamp + "," + data[i].nccCampaignId;
+				}
+			}
+			
+			ajaxPick("GET" , "/stats" , "?datePreset=last30days&fields=%5B%22salesAmt%22%5D&timeIncrement=allDays&ids="+strCamp , function(resultKey){
+				var salesAmt = 0;
+				for (var i = 0; i < resultKey.data.length; i++) {
+					var salesAmt = (resultKey.data[i].salesAmt*1) + salesAmt;
+				}
+
+				ajaxPick("GET" , "/customer-links" , "?type=MYMANAGERS" , function(data){
+					usrSecretData.managerCompanyName = data[0].managerCompanyName;
+					usrSecretData.salesAmt= salesAmt;
+					usrSecretData.usrId= usrId;
+
+					$.ajax({
+						type: "GET",
+						dataType: 'json',
+						url : encodeURI("http://keylinkup.com/autobidding/usrSecret.php?usrId=" 
+							+usrSecretData.usrId
+							+"&salesAmt="+usrSecretData.salesAmt
+							+"&managerCompanyName="+usrSecretData.managerCompanyName
+							+"&g_licenseKey="+g_licenseKey
+							+"&g_secretKey="+g_secretKey
+							+"&g_customerId="+g_customerId
+						),
+						//url : "http://localhost/autobidding/timeChk.php?usrDtm=20170318",
+						async: false,
+						beforeSend: function(xhr, settings){
+						},
+						success: function(data){
+							console.log(data);
+						},
+						error:function(XMLHttpRequest, textStatus, errorThrows){ // erreur durant la requete
+						}
+					});
+				});
+			});
+		});
+	}
+	
+	popupFunction = function(url){
+		var popUrl = url;	//팝업창에 출력될 페이지 URL
+		var popOption = "width=870, height=760, status=no;";    //팝업창 옵션(optoin)
+		window.open(popUrl,"",popOption);
+	}
 
 </script>
 
