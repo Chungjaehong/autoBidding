@@ -9,6 +9,7 @@
     "package": "asar pack ./LinkUP-win32-x64/resources/app/ ./LinkUP-win32-x64/resources/app.asar &&rd ./LinkUP-win32-x64/resources/app /S /Q"
   },
   "dependencies": {
+    "asar": "^0.13.0",
     "electron": "^1.4.12",
     "electron-packager": "^8.3.0",
     "electron-prebuilt": "^1.4.10",
