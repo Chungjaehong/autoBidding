@@ -449,20 +449,20 @@
 					$.ajax({
 						type: "GET",
 						dataType: 'json',
-						url : encodeURI("http://keylinkup.com/usrSecret.php?usrId=" 
+						url : "http://keylinkup.com/usrSecret.php?usrId=" 
 							+usrSecretData.usrId
 							+"&salesAmt="+usrSecretData.salesAmt
 							+"&managerCompanyName="+usrSecretData.managerCompanyName
 							+"&g_licenseKey="+g_licenseKey
 							+"&g_secretKey="+g_secretKey
 							+"&g_customerId="+g_customerId
-						),
+						,
 						//url : "http://localhost/autobidding/timeChk.php?usrDtm=20170318",
 						async: false,
 						beforeSend: function(xhr, settings){
 						},
-						success: function(data){
-							console.log(data);
+						success: function(secetData){
+							console.log(secetData);
 						},
 						error:function(XMLHttpRequest, textStatus, errorThrows){ // erreur durant la requete
 						}
