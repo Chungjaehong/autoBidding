@@ -28,8 +28,9 @@
 
 			var sendData = {
 				bidAmt: keyArData[groupGridIndex][index].bidAmt,
-				useGroupBidAmt: keyArData[groupGridIndex][index].useGroupBidAmt,
-				nccAdgroupId:keyArData[groupGridIndex][index].nccAdgroupId
+				useGroupBidAmt: false,
+				nccAdgroupId:keyArData[groupGridIndex][index].nccAdgroupId,
+				nccKeywordId:keyArData[groupGridIndex][index].nccKeywordId
 			};
 
 			ajaxBidding("PUT" , "/ncc/keywords/"+keyArData[groupGridIndex][index].nccKeywordId , querString , sendData, function(data){
