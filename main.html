@@ -373,8 +373,32 @@
 	}
 
 	$("#btnTestAjax2").click(function(event) {
-		mobileRankUrl = encodeURI("http://m.ad.search.naver.com/search.naver?where=m_expd&ie=utf8&query=애기옷");
-		$("#ifrView").attr("src",mobileRankUrl);
+		/*mobileRankUrl = encodeURI("http://m.ad.search.naver.com/search.naver?where=m_expd&ie=utf8&query=애기옷");
+		$("#ifrView").attr("src",mobileRankUrl);*/
+		idChkFlag = false;
+
+		$.ajax({
+				type: "GET",
+				dataType: 'json',
+				url : "http://keylinkup.com/infoChk.php?mb_id="+ usrId+"&mb_3="+g_customerId,
+				async: false,
+				beforeSend: function(xhr, settings){
+				},
+				success: function(data){
+					console.log(data);
+					if(data.result=="S"){
+						idChkFlag = true;	
+					}else{
+						alert("아이디당 하나의 광고아이디만 사용 가능합니다.\n광고 아이디 추가 및 광고 아이디 변경시 관리자에 문의하세요.");
+						popupFunction("http://keylinkup.com/");
+						idChkFlag = false;
+						return;
+					}
+				},
+				error:function(XMLHttpRequest, textStatus, errorThrows){ // erreur durant la requete
+				}
+			});
+		
 	});	
 
 	authChk = function(){
@@ -383,7 +407,7 @@
 		$.ajax({
 			type: "GET",
 			dataType: 'json',
-			url : "http://keylinkup.com/autobidding/timeChk.php?usDtm="+usDtm,
+			url : "http://keylinkup.com/timeChk.php?usDtm="+usDtm,
 			//url : "http://localhost/autobidding/timeChk.php?usrDtm=20170318",
 			async: false,
 			beforeSend: function(xhr, settings){
@@ -425,7 +449,7 @@
 					$.ajax({
 						type: "GET",
 						dataType: 'json',
-						url : encodeURI("http://keylinkup.com/autobidding/usrSecret.php?usrId=" 
+						url : encodeURI("http://keylinkup.com/usrSecret.php?usrId=" 
 							+usrSecretData.usrId
 							+"&salesAmt="+usrSecretData.salesAmt
 							+"&managerCompanyName="+usrSecretData.managerCompanyName
@@ -452,6 +476,33 @@
 		var popUrl = url;	//팝업창에 출력될 페이지 URL
 		var popOption = "width=870, height=760, status=no;";    //팝업창 옵션(optoin)
 		window.open(popUrl,"",popOption);
+	}
+
+	idCheckFunction = function(callback){
+		idChkFlag = false;
+
+		$.ajax({
+				type: "GET",
+				dataType: 'json',
+				url : "http://keylinkup.com/infoChk.php?mb_id="+ usrId+"&mb_3="+g_customerId,
+				async: false,
+				beforeSend: function(xhr, settings){
+				},
+				success: function(data){
+					console.log(data);
+					if(data.result=="S"){
+						idChkFlag = true;	
+						callback(idChkFlag);
+					}else{
+						alert("아이디당 하나의 광고아이디만 사용 가능합니다.\n광고 아이디 추가 및 광고 아이디 변경시 관리자에 문의하세요.");
+						popupFunction("http://keylinkup.com/");
+						idChkFlag = false;
+						callback(idChkFlag);
+					}
+				},
+				error:function(XMLHttpRequest, textStatus, errorThrows){ // erreur durant la requete
+				}
+			});
 	}
 
 </script>

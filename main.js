@@ -5,7 +5,7 @@ const app = electron.app
 const BrowserWindow = electron.BrowserWindow
 const ipcMain = require('electron').ipcMain;
 
-global.sharedObj = {prop1: 0};
+global.sharedObj = {prop1: 0,usrType:"",usrDtm:"",usrId:""};
 
 ipcMain.on('show-prop1', function(event) {
   console.log(global.sharedObj.prop1);

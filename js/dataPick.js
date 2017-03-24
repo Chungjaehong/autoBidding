@@ -132,46 +132,52 @@
 		//유저정보
 		usrSecret();
 
-		//그룹동기화
-		progressFunction(10,"그룹 동기화");
+		idCheckFunction(function(flag){
+			if(!flag){
+				return;
+			}
+			//그룹동기화
+			progressFunction(10,"그룹 동기화");
 
-		$("#groupDataMenu").click();
-		$(".nav-tabs a").click();
-		fnObj.groupGrid.bind();
-		fnObj.keywordGrid.bind();
+			$("#groupDataMenu").click();
+			$(".nav-tabs a").click();
+			fnObj.groupGrid.bind();
+			fnObj.keywordGrid.bind();
 
-		chkVar =usergrid.getCheckedList(2);
-		
-		keyArData = new Array();
+			chkVar =usergrid.getCheckedList(2);
+			
+			keyArData = new Array();
 
-		for(var i=0; i < chkVar.length ; i++){
-			ajaxPick("GET" , "/ncc/keywords" , "?nccAdgroupId=" + chkVar[i].nccAdgroupId + "&recordSize=1000" , function(data){
-				chkVar[i].keyCout = data.length;
-				for(var j=0; j < data.length ; j++){
-					//data[j].NudeKeyword = data[j].managedKeyword.pCPLMaxDepth;
-					data[j].nowRank = 0;
-					data[j].maxPay = 10000;
-					data[j].biddingPay = 100;
-					data[j].wantRank = 1;
-					data[j].___checked = {"0":true};
-					if(data[j].status == "ELIGIBLE"){
-						data[j].status = "ON";
-					}else{
-						data[j].status = "OFF";
+			for(var i=0; i < chkVar.length ; i++){
+				ajaxPick("GET" , "/ncc/keywords" , "?nccAdgroupId=" + chkVar[i].nccAdgroupId + "&recordSize=1000" , function(data){
+					chkVar[i].keyCout = data.length;
+					for(var j=0; j < data.length ; j++){
+						//data[j].NudeKeyword = data[j].managedKeyword.pCPLMaxDepth;
+						data[j].nowRank = 0;
+						data[j].maxPay = 10000;
+						data[j].biddingPay = 100;
+						data[j].wantRank = 1;
+						data[j].___checked = {"0":true};
+						if(data[j].status == "ELIGIBLE"){
+							data[j].status = "ON";
+						}else{
+							data[j].status = "OFF";
+						}
 					}
-				}
-				keyArData.push(data);
-			});
-		}
-		groupGrid.setList(chkVar, null, "reload");
-		keywordGrid.setList(keyArData[0], null, "reload");
-		
-		groupGrid.setFocus(groupGridIndex);
+					keyArData.push(data);
+				});
+			}
+			groupGrid.setList(chkVar, null, "reload");
+			keywordGrid.setList(keyArData[0], null, "reload");
+			
+			groupGrid.setFocus(groupGridIndex);
 
-		writeFile(JSON.stringify(usergrid.getList()),"usergrid.json");
-		
-		progressFunction(100,"그룹 동기화");
-		pickBizmoney();
+			writeFile(JSON.stringify(usergrid.getList()),"usergrid.json");
+			
+			progressFunction(100,"그룹 동기화");
+			pickBizmoney();
+		});
+
 	});
 
 	pickBizmoney = function(){//비즈잔액 조회

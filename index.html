@@ -85,7 +85,7 @@
 		});
 	}
 
-	varVersion = 1.028;
+	varVersion = 1.029;
 	
 	$("#appVersion").text("APP Ver : "+varVersion);
 	
@@ -152,6 +152,7 @@
 			$.ajax({
 				type: "GET",
 				dataType: 'json',
+				//url : "http://keylinkup.com/loginChk.php?mb_id="+ param.usrId +"&mb_password="+param.usrPwd,
 				url : "http://keylinkup.com/loginChk.php?mb_id="+ param.usrId +"&mb_password="+param.usrPwd,
 				async: false,
 				beforeSend: function(xhr, settings){
@@ -160,7 +161,6 @@
 					if(data.result=="S"){
 						loginFlagChange(data.mb_id, data.mb_1, data.mb_2);
 						location.replace("main.html");
-						
 					}else{
 						alert(data.message);
 					}
