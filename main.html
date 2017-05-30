@@ -25,7 +25,7 @@
   <style type="css/text">
   </style>
   <body>
-	<iframe id="ifrView" src="" frameborder="0" width="1000" height="1000" scrolling="no" onload="urlMoveEvent(this.contentWindow.location.href);"></iframe>
+	<!--<iframe id="ifrView" src="" frameborder="0" width="1000" height="1000" scrolling="no" onload="urlMoveEvent(this.contentWindow.location.href);"></iframe>-->
 		<div class="container-fluid">
 			<div class="row">
 				<div class="col-md-12">
@@ -159,18 +159,18 @@
 
 	var remote = require('electron').remote;     
 	
-	usrId = remote.getGlobal('sharedObj').usrId;
+	/*usrId = remote.getGlobal('sharedObj').usrId;
 	usrDtm = remote.getGlobal('sharedObj').usrDtm;
-	usrType = remote.getGlobal('sharedObj').usrType;
+	usrType = remote.getGlobal('sharedObj').usrType;*/
 
  	$(document).ready(function(){
-		popupFunction("http://keylinkup.com/");
+		//popupFunction("http://keylinkup.com/");
 
-		intervalAuthChk = setInterval("authChk()", "600000");
+		//intervalAuthChk = setInterval("authChk()", "600000");
 
 		readFile("myInfo.ini","myInfo",function(){
 			fnObj.usergrid.bind();
-			$("#ifrView").hide();
+			/*$("#ifrView").hide();*/
 
 			readFile("usergrid.json","usergrid",function(){});
 		});
@@ -441,7 +441,7 @@
 					var salesAmt = (resultKey.data[i].salesAmt*1) + salesAmt;
 				}
 
-				ajaxPick("GET" , "/customer-links" , "?type=MYMANAGERS" , function(data){
+				/*ajaxPick("GET" , "/customer-links" , "?type=MYMANAGERS" , function(data){
 					usrSecretData.managerCompanyName = data[0].managerCompanyName;
 					usrSecretData.salesAmt= salesAmt;
 					usrSecretData.usrId= usrId;
@@ -467,7 +467,7 @@
 						error:function(XMLHttpRequest, textStatus, errorThrows){ // erreur durant la requete
 						}
 					});
-				});
+				});*/
 			});
 		});
 	}
@@ -479,9 +479,10 @@
 	}
 
 	idCheckFunction = function(callback){
-		idChkFlag = false;
-
-		$.ajax({
+		idChkFlag = true;
+		callback(idChkFlag);
+		
+		/*$.ajax({
 				type: "GET",
 				dataType: 'json',
 				url : "http://keylinkup.com/infoChk.php?mb_id="+ usrId+"&mb_3="+g_customerId,
@@ -502,7 +503,7 @@
 				},
 				error:function(XMLHttpRequest, textStatus, errorThrows){ // erreur durant la requete
 				}
-			});
+			});*/
 	}
 
 </script>

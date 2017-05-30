@@ -26,8 +26,8 @@ const template = [
         label: '홈',
 		    enabled : true,
 		    click (item, menuClick) {
-          mainWindow.loadURL(`file:${__dirname}/index.html`)
-          //mainWindow.loadURL(`file:${__dirname}/main.html`)
+          //mainWindow.loadURL(`file:${__dirname}/index.html`)
+          mainWindow.loadURL(`file:${__dirname}/main.html`)
         } 
       },
       {
@@ -72,7 +72,8 @@ function createWindow () {
     })
 
   // and load the index.html of the app.
-  mainWindow.loadURL(`file://${__dirname}/index.html`)
+  //mainWindow.loadURL(`file://${__dirname}/index.html`)
+  mainWindow.loadURL(`file://${__dirname}/main.html`)
 
   // Open the DevTools.
   //mainWindow.webContents.openDevTools();

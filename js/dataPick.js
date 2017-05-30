@@ -130,7 +130,7 @@
 
 	$("#btnGroup").click(function(){//그룹 동기화 버튼
 		//유저정보
-		usrSecret();
+		//usrSecret();
 
 		idCheckFunction(function(flag){
 			if(!flag){
@@ -244,8 +244,10 @@
 				//console.log(data);
 				naverRank = data.match(/<a class=\"lnk_url\".*?>(.*?)<\/a>/g);
 				for(var i=0; i < naverRank.length ; i++){
+					keyArData[groupGridIndex][index].nowRank = 0;
 					if(naverRank[i].indexOf(markUrl) > -1){
 						keyArData[groupGridIndex][index].nowRank = i+1;
+						break;
 					}
 				}
 				
